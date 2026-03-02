@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>House Price Predictor</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="card">
+    <h1>🏠 House Price Predictor</h1>
+    <p class="subtitle">Powered by Random Forest Regression</p>
+
+    <% if defined?(error_message) && error_message %>
+      <div class="result error">
+        <div class="label">Error</div>
+        <div class="price"><%= error_message %></div>
+      </div>
+    <% end %>
+
+    <form action="/predict" method="post">
+      <div class="form-group">
+        <label>Area <span class="unit">(sq ft)</span></label>
+        <input type="number" name="area" placeholder="e.g. 1500" min="1" required>
+      </div>
+
+      <div class="form-group">
+        <label>Rooms</label>
+        <input type="number" name="rooms" placeholder="e.g. 3" min="1" required>
+      </div>
+
+      <div class="form-group">
+        <label>Bathrooms</label>
+        <input type="number" name="bathrooms" placeholder="e.g. 2" min="1" required>
+      </div>
+
+      <div class="form-group">
+        <label>Age <span class="unit">(years)</span></label>
+        <input type="number" name="age" placeholder="e.g. 10" min="0" required>
+      </div>
+
+      <button type="submit">Predict Price</button>
+    </form>
+  </div>
+</body>
+</html>

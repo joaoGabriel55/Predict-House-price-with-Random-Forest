@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediction Result - House Price Predictor</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="card">
+    <h1>🏠 House Price Predictor</h1>
+    <p class="subtitle">Powered by Random Forest Regression</p>
+
+    <div class="result">
+      <div class="label">Predicted Price</div>
+      <div class="price">$<%= format('%.2f', price) %>K</div>
+    </div>
+
+    <div class="input-summary">
+      <h2>Input Parameters</h2>
+      <ul>
+        <li><strong>Area:</strong> <%= area %> sq ft</li>
+        <li><strong>Rooms:</strong> <%= rooms %></li>
+        <li><strong>Bathrooms:</strong> <%= bathrooms %></li>
+        <li><strong>Age:</strong> <%= age %> years</li>
+      </ul>
+    </div>
+
+    <a href="/" class="back-link">← Make another prediction</a>
+  </div>
+</body>
+</html>
