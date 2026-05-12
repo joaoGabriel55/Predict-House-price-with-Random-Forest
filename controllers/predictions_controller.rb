@@ -1,10 +1,12 @@
 require_relative '../models/house_predictor'
-require_relative '../models/house_parameter_extractor'
+require_relative '../models/house_predictor_llm'
+require 'ruby_llm'
+require 'dotenv/load'
 
 class PredictionsController
   def initialize
     @predictor = HousePredictor.instance
-    @extractor = HouseParameterExtractor.new
+    @llm_predictor = HousePredictorLLM.new
   end
 
   def index
@@ -52,23 +54,44 @@ class PredictionsController
 
     raise "Please provide a house description" if text.nil? || text.strip.empty?
 
-    extracted_params = @extractor.extract_parameters(text)
+    context = RubyLLM.context do |config|
+      config.openrouter_api_key = ENV['OPENROUTER_API_KEY']
+      config.default_model = 'anthropic/claude-opus-4.6'
+    end
 
-    price = @predictor.predict(
-      area: extracted_params[:area],
-      rooms: extracted_params[:rooms],
-      bathrooms: extracted_params[:bathrooms],
-      age: extracted_params[:age]
-    )
+    # Capture tool result using a callback
+    tool_result = nil
+
+    chat = context.chat(provider: 'openrouter')
+    chat.after_tool_result do |result|
+      tool_result = result
+    end
+
+    chat.with_tool(@llm_predictor, choice: :required)
+
+    prompt = <<~PROMPT
+      Extract the house parameters from the following description and use the tool to predict the price:
+      #{text}
+
+      Extract: area (square feet), rooms (count), bathrooms (count), and age (years).
+    PROMPT
+
+    chat.ask(prompt)
+
+    raise "Tool was not called or returned no result" if tool_result.nil?
+
+    if tool_result[:error]
+      raise tool_result[:error]
+    end
 
     {
       view: :llm_result,
       locals: {
-        area: extracted_params[:area],
-        rooms: extracted_params[:rooms],
-        bathrooms: extracted_params[:bathrooms],
-        age: extracted_params[:age],
-        price: price,
+        area: tool_result[:area],
+        rooms: tool_result[:rooms],
+        bathrooms: tool_result[:bathrooms],
+        age: tool_result[:age],
+        price: tool_result[:predicted_price],
         original_text: text
       }
     }
