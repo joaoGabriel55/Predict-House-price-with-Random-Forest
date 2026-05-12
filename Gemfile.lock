@@ -1,13 +1,36 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    anthropic (1.40.0)
+      cgi
+      connection_pool
+      standardwebhooks
     base64 (0.3.0)
+    cgi (0.5.1)
+    connection_pool (3.0.2)
     csv (3.3.5)
+    dotenv (3.2.0)
+    event_stream_parser (1.0.0)
+    faraday (2.14.1)
+      faraday-net_http (>= 2.0, < 3.5)
+      json
+      logger
+    faraday-multipart (1.2.0)
+      multipart-post (~> 2.0)
+    faraday-net_http (3.4.2)
+      net-http (~> 0.5)
+    faraday-retry (2.4.0)
+      faraday (~> 2.0)
+    json (2.19.5)
     logger (1.7.0)
+    marcel (1.1.0)
     mmh3 (1.2.0)
     multi_json (1.19.1)
+    multipart-post (2.4.1)
     mustermann (3.0.4)
       ruby2_keywords (~> 0.0.1)
+    net-http (0.9.1)
+      uri (>= 0.11.1)
     nio4r (2.7.5)
     numo-narray-alt (0.10.3)
     numo-optimize (0.3.0)
@@ -25,6 +48,17 @@ GEM
     rackup (2.3.1)
       rack (>= 3)
     ruby2_keywords (0.0.5)
+    ruby_llm (1.15.0)
+      base64
+      event_stream_parser (~> 1)
+      faraday (>= 1.10.0)
+      faraday-multipart (>= 1)
+      faraday-net_http (>= 1)
+      faraday-retry (>= 1)
+      marcel (~> 1)
+      ruby_llm-schema (~> 0)
+      zeitwerk (~> 2)
+    ruby_llm-schema (0.3.0)
     rumale (2.1.0)
       numo-narray-alt (>= 0.9.10, < 0.11.0)
       rumale-clustering (~> 2.1.0)
@@ -123,15 +157,21 @@ GEM
       rack-protection (= 4.2.1)
       sinatra (= 4.2.1)
       tilt (~> 2.0)
+    standardwebhooks (1.1.0)
     tilt (2.7.0)
+    uri (1.1.1)
+    zeitwerk (2.7.5)
 
 PLATFORMS
   arm64-darwin-23
   ruby
 
 DEPENDENCIES
+  anthropic (~> 1.40)
+  dotenv (~> 3.1)
   puma (~> 6.4)
   rackup (~> 2.1)
+  ruby_llm (~> 1.15)
   rumale (~> 2.1)
   sinatra (~> 4.0)
   sinatra-contrib (~> 4.0)

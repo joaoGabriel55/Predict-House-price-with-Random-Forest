@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'dotenv/load'
 require_relative 'models/house_predictor'
 require_relative 'controllers/predictions_controller'
 
@@ -15,5 +16,15 @@ end
 
 post '/predict' do
   result = controller.predict(params)
+  erb result[:view], locals: result[:locals]
+end
+
+get '/llm' do
+  result = controller.llm_index
+  erb result[:view], locals: result[:locals]
+end
+
+post '/llm/predict' do
+  result = controller.predict_with_llm(params)
   erb result[:view], locals: result[:locals]
 end

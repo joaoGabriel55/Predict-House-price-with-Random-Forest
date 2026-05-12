@@ -5,11 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>House Price Predictor</title>
   <link rel="stylesheet" href="/style.css">
+  <style>
+    .mode-toggle {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .mode-toggle a {
+      color: #2c5364;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .mode-toggle a:hover {
+      color: #0f2027;
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
   <div class="card">
     <h1>🏠 House Price Predictor</h1>
     <p class="subtitle">Powered by Random Forest Regression</p>
+
+    <div class="mode-toggle">
+      <a href="/llm">🤖 Switch to AI Text Mode →</a>
+    </div>
 
     <% if defined?(error_message) && error_message %>
       <div class="result error">

@@ -1,8 +1,10 @@
 require_relative '../models/house_predictor'
+require_relative '../models/house_parameter_extractor'
 
 class PredictionsController
   def initialize
     @predictor = HousePredictor.instance
+    @extractor = HouseParameterExtractor.new
   end
 
   def index
@@ -37,6 +39,45 @@ class PredictionsController
       view: :index,
       locals: {
         error_message: e.message
+      }
+    }
+  end
+
+  def llm_index
+    { view: :llm_index, locals: {} }
+  end
+
+  def predict_with_llm(params)
+    text = params[:description] || params["description"]
+
+    raise "Please provide a house description" if text.nil? || text.strip.empty?
+
+    extracted_params = @extractor.extract_parameters(text)
+
+    price = @predictor.predict(
+      area: extracted_params[:area],
+      rooms: extracted_params[:rooms],
+      bathrooms: extracted_params[:bathrooms],
+      age: extracted_params[:age]
+    )
+
+    {
+      view: :llm_result,
+      locals: {
+        area: extracted_params[:area],
+        rooms: extracted_params[:rooms],
+        bathrooms: extracted_params[:bathrooms],
+        age: extracted_params[:age],
+        price: price,
+        original_text: text
+      }
+    }
+  rescue => e
+    {
+      view: :llm_index,
+      locals: {
+        error_message: e.message,
+        description: text
       }
     }
   end
