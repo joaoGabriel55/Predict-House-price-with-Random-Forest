@@ -85,7 +85,7 @@
       <div class="params-grid">
         <div class="param-item">
           <div class="param-label">Area</div>
-          <div class="param-value"><%= area %> sq ft</div>
+          <div class="param-value"><%= area %> sq meters</div>
         </div>
         <div class="param-item">
           <div class="param-label">Rooms</div>
@@ -109,7 +109,7 @@
 
     <div class="result">
       <div class="label">Predicted Price</div>
-      <div class="price">$<%= price.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse %></div>
+      <div class="price">$<%= format('%.2f', price) %>K</div>
     </div>
 
     <a href="/llm" class="back-link">← Try Another Prediction</a>

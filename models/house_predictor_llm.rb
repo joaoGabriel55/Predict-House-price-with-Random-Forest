@@ -3,7 +3,7 @@ require 'dotenv/load'
 require_relative 'house_predictor'
 
 class HousePredictorLLM < RubyLLM::Tool
-  desc "Predicts house price based on area (square feet), number of rooms, number of bathrooms, and age (years)"
+  desc "Predicts house price based on area (square meters), number of rooms, number of bathrooms, and age (years)"
 
   def execute(area:, rooms:, bathrooms:, age:)
     price = HousePredictor.instance.predict(

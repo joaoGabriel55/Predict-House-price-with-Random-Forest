@@ -174,7 +174,7 @@ You can quickly test the model without starting the server:
 ruby test_model.rb
 ```
 
-This loads the serialized model and predicts the price for a sample house (500 sq ft, 10 rooms, 5 bathrooms, 20 years old).
+This loads the serialized model and predicts the price for a sample house (500 sq meters, 10 rooms, 5 bathrooms, 20 years old).
 
 ---
 
@@ -252,7 +252,7 @@ The `houses.csv` file has no header row. Each row contains five comma-separated 
 
 | Column | Description                    | Example |
 | ------ | ------------------------------ | ------- |
-| 1      | Area (sq ft)                   | 200     |
+| 1      | Area (sq meters)                   | 200     |
 | 2      | Number of rooms                | 4       |
 | 3      | Number of bathrooms            | 3       |
 | 4      | Age of the house (years)       | 5       |

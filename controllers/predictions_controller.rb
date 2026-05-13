@@ -73,7 +73,7 @@ class PredictionsController
       Extract the house parameters from the following description and use the tool to predict the price:
       #{text}
 
-      Extract: area (square feet), rooms (count), bathrooms (count), and age (years).
+      Extract: area (square meters), rooms (count), bathrooms (count), and age (years).
     PROMPT
 
     chat.ask(prompt)
