@@ -4,7 +4,7 @@ A machine-learning-powered web application that predicts house prices based on p
 
 **NEW:** Now features an **AI Text Mode** that combines LLM natural language understanding with Random Forest predictions, plus comprehensive benchmarks comparing traditional ML vs LLM approaches.
 
-📈 **[View Interactive Architecture & Benchmarks Overview](https://html-preview.github.io/?url=https://github.com/joaoGabriel55/Predict-House-price-with-Random-Forest/blob/main/architecture-and-benchmarks.html)**
+📈 **[View Interactive Architecture & Benchmarks Overview](https://html-preview.github.io/?url=https://github.com/joaoGabriel55/Predict-House-price-with-Random-Forest/blob/rubyconf26/architecture-and-benchmarks.html)**
 
 ![Ruby](https://img.shields.io/badge/Ruby-CC342D?style=flat&logo=ruby&logoColor=white)
 ![Sinatra](https://img.shields.io/badge/Sinatra-000000?style=flat&logo=ruby-sinatra&logoColor=white)
@@ -207,7 +207,7 @@ This runs 4 comprehensive experiments:
 
 Results are printed to stdout and saved to `benchmark_results.md`.
 
-📈 **[View Interactive Architecture & Benchmarks Overview](https://html-preview.github.io/?url=https://github.com/joaoGabriel55/Predict-House-price-with-Random-Forest/blob/main/architecture-and-benchmarks.html)**
+📈 **[View Interactive Architecture & Benchmarks Overview](https://html-preview.github.io/?url=https://github.com/joaoGabriel55/Predict-House-price-with-Random-Forest/blob/rubyconf26/architecture-and-benchmarks.html)**
 
 **Latest Results Snapshot:**
 - **RF MAE:** 8.21K | **LLM MAE:** 155.4K (RF is ~19x more accurate)
