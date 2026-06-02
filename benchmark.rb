@@ -121,8 +121,12 @@ data = csv_data.map do |row|
   # Convert price to thousands (K) - prices are like "22e4" = 220000 = 220K
   price = row[TARGET_COL].to_f / 1000.0
 
-  # Skip rows with invalid data
-  next if features.any?(&:zero?) || price.zero?
+  # Skip rows only when an *essential* value is missing. half_bathrooms (and
+  # lot_size for condos) are legitimately 0, so `features.any?(&:zero?)` wrongly
+  # discarded ~62% of valid homes (2,853 of 4,583). Validate the must-be-positive
+  # fields instead: a real listing has a price, a size, and at least one bedroom.
+  bedrooms, _full_bath, _half_bath, size_sqft, _lot_size = features
+  next if price.zero? || size_sqft.zero? || bedrooms.zero?
 
   features + [price]
 end.compact
