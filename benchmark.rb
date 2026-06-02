@@ -38,10 +38,14 @@ require 'numo/narray'
 API_KEY        = ENV.fetch('OPENROUTER_API_KEY') { abort 'Set OPENROUTER_API_KEY env var' }
 API_URL        = 'https://openrouter.ai/api/v1/chat/completions'
 MODEL          = 'anthropic/claude-opus-4.6' # Change to any model on OpenRouter
-CSV_FILE       = 'houses.csv'
+CSV_FILE       = 'housing_las_vegas_05_05_17.csv'
 TEST_RATIO     = 0.2          # 20% of data for testing
 CONSISTENCY_N  = 10           # number of repeated LLM calls per test case
 RANDOM_SEED    = 42
+
+# Feature columns to use for prediction
+FEATURE_COLS   = ['bedrooms', 'full_bathrooms', 'half_bathrooms', 'size_sqft', 'lot_size']
+TARGET_COL     = 'price'
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -79,8 +83,6 @@ def call_llm(prompt, max_tokens: 300, temperature: 1.0)
 end
 
 def extract_number(text)
-  puts "TEXT TEXT"
-  puts text
   # Try to find a number that looks like a price (possibly with K suffix)
   match = text.match(/(\d[\d,_.]*)\s*[Kk]/)
   if match
@@ -110,12 +112,29 @@ puts "=" * 70
 puts "Loading data from #{CSV_FILE}..."
 puts "=" * 70
 
-raw = CSV.read(CSV_FILE).map { |row| row.map(&:to_f) }
-raw.shuffle!(random: Random.new(RANDOM_SEED))
+# Parse CSV with headers
+csv_data = CSV.read(CSV_FILE, headers: true)
 
-split_idx = (raw.size * (1 - TEST_RATIO)).to_i
-train_data = raw[0...split_idx]
-test_data  = raw[split_idx..]
+# Extract features and target, filtering out rows with missing values
+data = csv_data.map do |row|
+  features = FEATURE_COLS.map { |col| row[col].to_f }
+  # Convert price to thousands (K) - prices are like "22e4" = 220000 = 220K
+  price = row[TARGET_COL].to_f / 1000.0
+
+  # Skip rows with invalid data
+  next if features.any?(&:zero?) || price.zero?
+
+  features + [price]
+end.compact
+
+puts "Loaded #{data.size} valid rows from #{csv_data.size} total rows"
+
+# Shuffle and split
+data.shuffle!(random: Random.new(RANDOM_SEED))
+
+split_idx = (data.size * (1 - TEST_RATIO)).to_i
+train_data = data[0...split_idx]
+test_data  = data[split_idx..]
 
 train_x = Numo::DFloat.asarray(train_data.map { |r| r[0..-2] })
 train_y = Numo::DFloat.asarray(train_data.map { |r| r.last })
@@ -178,17 +197,18 @@ test_subset_size = [test_features.size, 20].min
 puts "Running LLM predictions on #{test_subset_size} test cases (may take a few minutes)..."
 
 test_features[0...test_subset_size].each_with_index do |features, i|
-  area, rooms, bathrooms, age = features
+  bedrooms, full_bath, half_bath, sqft, lot_sqft = features
+  total_bath = full_bath + (half_bath * 0.5)
 
   prompt = <<~PROMPT
-    You are a house price estimator. Based on these features, predict the house price in thousands (K).
+    You are a Las Vegas house price estimator. Based on these features, predict the house price in thousands of dollars (K).
     Reply with ONLY a number followed by K. Example: 450K
 
-    Features:
-    - Area: #{area.to_i} m²
-    - Rooms: #{rooms.to_i}
-    - Bathrooms: #{bathrooms.to_i}
-    - Age: #{age.to_i} years
+    Property Features:
+    - Bedrooms: #{bedrooms.to_i}
+    - Bathrooms: #{total_bath.round(1)} (#{full_bath.to_i} full, #{half_bath.to_i} half)
+    - Square Footage: #{sqft.to_i} sqft
+    - Lot Size: #{lot_sqft.to_i} sqft
 
     Predicted price:
   PROMPT
@@ -199,7 +219,7 @@ test_features[0...test_subset_size].each_with_index do |features, i|
   llm_predictions << price
   llm_latencies << result[:latency]
 
-  puts "  [#{i + 1}/#{test_subset_size}] Actual: #{test_prices[i]}K | LLM: #{price}K (#{result[:latency].round(2)}s)"
+  puts "  [#{i + 1}/#{test_subset_size}] Actual: #{test_prices[i].round(1)}K | LLM: #{price}K (#{result[:latency].round(2)}s)"
   sleep(0.5) # rate limiting
 end
 
@@ -242,8 +262,9 @@ consistency_cases = test_features[0..2]
 consistency_actual = test_prices[0..2]
 
 consistency_cases.each_with_index do |features, ci|
-  area, rooms, bathrooms, age = features
-  puts "\nCase #{ci + 1}: Area=#{area.to_i}m², Rooms=#{rooms.to_i}, Bath=#{bathrooms.to_i}, Age=#{age.to_i} (Actual: #{consistency_actual[ci]}K)"
+  bedrooms, full_bath, half_bath, sqft, lot_sqft = features
+  total_bath = full_bath + (half_bath * 0.5)
+  puts "\nCase #{ci + 1}: #{bedrooms.to_i}bed, #{total_bath.round(1)}bath, #{sqft.to_i}sqft, #{lot_sqft.to_i}sqft lot (Actual: #{consistency_actual[ci].round(1)}K)"
 
   # RF is deterministic
   rf_input = Numo::DFloat[*features].expand_dims(0)
@@ -254,14 +275,14 @@ consistency_cases.each_with_index do |features, ci|
   llm_preds = []
   CONSISTENCY_N.times do |j|
     prompt = <<~PROMPT
-      You are a house price estimator. Based on these features, predict the house price in thousands (K).
+      You are a Las Vegas house price estimator. Based on these features, predict the house price in thousands of dollars (K).
       Reply with ONLY a number followed by K. Example: 450K
 
-      Features:
-      - Area: #{area.to_i} m²
-      - Rooms: #{rooms.to_i}
-      - Bathrooms: #{bathrooms.to_i}
-      - Age: #{age.to_i} years
+      Property Features:
+      - Bedrooms: #{bedrooms.to_i}
+      - Bathrooms: #{total_bath.round(1)} (#{full_bath.to_i} full, #{half_bath.to_i} half)
+      - Square Footage: #{sqft.to_i} sqft
+      - Lot Size: #{lot_sqft.to_i} sqft
 
       Predicted price:
     PROMPT
@@ -289,11 +310,11 @@ puts "EXPERIMENT 4: Hybrid Pipeline (NL → LLM extraction → RF prediction)"
 puts "=" * 70
 
 natural_language_inputs = [
-  { text: "A spacious 250 square meter house with 5 bedrooms and 3 bathrooms, built about 10 years ago", expected: [250, 5, 3, 10] },
-  { text: "Small apartment, 60m², 2 rooms, 1 bathroom, pretty new, around 2 years old", expected: [60, 2, 1, 2] },
-  { text: "Old colonial mansion with 400 square meters, 8 rooms, 4 baths, over 50 years old", expected: [400, 8, 4, 50] },
-  { text: "Modern 120m² flat, 3 bedrooms, 2 bathrooms, 5 years since construction", expected: [120, 3, 2, 5] },
-  { text: "Cozy 80 sqm home, two bedrooms, one bathroom, fifteen years old", expected: [80, 2, 1, 15] },
+  { text: "Spacious single family home with 4 bedrooms, 3 full baths and 1 half bath, about 2500 square feet on a 7000 sqft lot", expected: [4, 3, 1, 2500, 7000] },
+  { text: "Cozy 3 bed 2 bath house, 1800 sqft, sits on 5500 square foot lot", expected: [3, 2, 0, 1800, 5500] },
+  { text: "Luxury property, 5 bedrooms, 4.5 baths (4 full, 1 half), massive 4200 sqft floor plan, 10000 sqft lot", expected: [5, 4, 1, 4200, 10000] },
+  { text: "Small starter home, 2 bedrooms, 2 bathrooms, compact 1200 square feet on a 3000 sqft lot", expected: [2, 2, 0, 1200, 3000] },
+  { text: "Modern home with three bedrooms, two and a half baths, 2000 square feet of living space, 6500 sqft lot", expected: [3, 2, 1, 2000, 6500] },
 ]
 
 extraction_results = []
@@ -301,7 +322,7 @@ extraction_results = []
 natural_language_inputs.each_with_index do |input, i|
   prompt = <<~PROMPT
     Extract house features from the following description. Return ONLY a JSON object with these exact keys:
-    {"area": <number>, "rooms": <number>, "bathrooms": <number>, "age": <number>}
+    {"bedrooms": <number>, "full_bathrooms": <number>, "half_bathrooms": <number>, "size_sqft": <number>, "lot_size": <number>}
 
     Description: "#{input[:text]}"
 
@@ -314,11 +335,11 @@ natural_language_inputs.each_with_index do |input, i|
     # Try to extract JSON from response
     json_match = result[:text].match(/\{[^}]+\}/)
     parsed = JSON.parse(json_match[0])
-    extracted = [parsed['area'], parsed['rooms'], parsed['bathrooms'], parsed['age']]
+    extracted = [parsed['bedrooms'], parsed['full_bathrooms'], parsed['half_bathrooms'], parsed['size_sqft'], parsed['lot_size']]
   rescue StandardError => e
     puts "  [#{i + 1}] Extraction failed: #{e.message}"
     puts "  Raw response: #{result[:text]}"
-    extracted = [0, 0, 0, 0]
+    extracted = [0, 0, 0, 0, 0]
   end
 
   expected = input[:expected]
@@ -364,7 +385,9 @@ markdown = <<~MD
   **Date:** #{Time.now.strftime('%Y-%m-%d %H:%M')}
   **LLM Model:** #{MODEL}
   **RF Estimators:** 100
-  **Dataset:** #{raw.size} rows (Train: #{train_data.size} / Test: #{test_data.size})
+  **Dataset:** Las Vegas Housing (#{data.size} valid rows from #{csv_data.size} total)
+  **Train/Test Split:** #{train_data.size} / #{test_data.size}
+  **Features:** Bedrooms, Full Bathrooms, Half Bathrooms, Square Footage, Lot Size
   **Test subset for LLM:** #{test_subset_size} cases
 
   ## Experiment 1 — Accuracy (on #{test_subset_size} test cases)
