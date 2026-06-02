@@ -1,6 +1,6 @@
 # 🏠 House Price Predictor with Random Forest
 
-A machine-learning-powered web application that predicts house prices based on property features. Built with **Ruby**, **Sinatra**, and **Rumale** (a Ruby machine learning library), this project trains a **Random Forest Regressor** on synthetic housing data and serves predictions through a clean web interface.
+A machine-learning-powered web application that predicts house prices based on property features. Built with **Ruby**, **Sinatra**, and **Rumale** (a Ruby machine learning library), this project trains a **Random Forest Regressor** on real Las Vegas housing data and serves predictions through a clean web interface.
 
 **NEW:** Now features an **AI Text Mode** that combines LLM natural language understanding with Random Forest predictions, plus comprehensive benchmarks comparing traditional ML vs LLM approaches.
 
@@ -16,12 +16,12 @@ A machine-learning-powered web application that predicts house prices based on p
 ## ✨ Features
 
 - **Random Forest Regression** — Uses Rumale's `RandomForestRegressor` with 100 estimators for accurate predictions
+- **Real Las Vegas Housing Data** — Trained on actual housing sales data from Las Vegas, Nevada
 - **AI Text Mode** — Describe houses in natural language! LLM uses RF prediction as a tool for intelligent responses
 - **Dual Interface** — Traditional form-based input (`/`) and natural language input (`/llm`)
 - **Tool-Based Architecture** — LLM uses Random Forest as a callable tool, combining natural language understanding with ML precision
 - **Comprehensive Benchmarks** — Rigorous comparison of RF vs LLM across accuracy, latency, consistency, and hybrid pipelines
 - **Singleton Model** — The trained model is loaded once and reused across requests for performance
-- **Synthetic Data Generator** — A Python script to generate realistic training samples at scale
 - **Simple MVC Architecture** — Clean separation into models, views, and controllers
 
 ---
@@ -45,28 +45,32 @@ A machine-learning-powered web application that predicts house prices based on p
 ```
 .
 ├── controllers/
-│   └── predictions_controller.rb   # Handles prediction requests (form + LLM modes)
+│   └── predictions_controller.rb       # Handles prediction requests (form + LLM modes)
 ├── models/
-│   ├── house_predictor.rb          # Singleton wrapper around the trained model
-│   └── house_predictor_llm.rb      # RubyLLM Tool for LLM-powered predictions
+│   ├── house_predictor.rb              # Singleton wrapper around the trained model
+│   └── house_predictor_llm.rb          # RubyLLM Tool for LLM-powered predictions
 ├── views/
-│   ├── index.erb                   # Traditional input form page
-│   ├── result.erb                  # Traditional prediction result page
-│   ├── llm_index.erb               # AI text mode input page
-│   └── llm_result.erb              # AI text mode result page with extraction details
+│   ├── index.erb                       # Traditional input form page
+│   ├── result.erb                      # Traditional prediction result page
+│   ├── llm_index.erb                   # AI text mode input page
+│   └── llm_result.erb                  # AI text mode result page with extraction details
 ├── public/
-│   └── style.css                   # Application styles
-├── generate_samples.py             # Python script to generate training data
-├── save_model.rb                   # Script to train and persist the model
-├── test_model.rb                   # Quick script to test predictions from CLI
-├── benchmark.rb                    # Comprehensive RF vs LLM benchmark suite
-├── benchmark_results.md            # Latest benchmark results
-├── server.rb                       # Sinatra application entry point
-├── houses.csv                      # Training dataset
-├── house_model.dat                 # Serialized trained model
-├── .env                            # Environment variables (OPENROUTER_API_KEY)
-├── Gemfile                         # Ruby dependencies
-└── Gemfile.lock                    # Locked dependency versions
+│   └── style.css                       # Application styles
+├── lead_scoring/
+│   ├── final_dataset.csv               # Lead scoring training dataset
+│   ├── lead_model.dat                  # Lead scoring trained model
+│   ├── lead_scoring.rb                 # Lead scoring prediction script
+│   └── train_save.rb                   # Lead scoring training script
+├── save_model.rb                       # Script to train and persist the model
+├── test_model.rb                       # Quick script to test predictions from CLI
+├── benchmark.rb                        # Comprehensive RF vs LLM benchmark suite
+├── benchmark_results.md                # Latest benchmark results
+├── server.rb                           # Sinatra application entry point
+├── housing_las_vegas_06_22_26.csv      # Las Vegas housing training dataset
+├── house_model.dat                     # Serialized trained model (generated by save_model.rb)
+├── .env                                # Environment variables (OPENROUTER_API_KEY)
+├── Gemfile                             # Ruby dependencies
+└── Gemfile.lock                        # Locked dependency versions
 ```
 
 ---
@@ -109,15 +113,11 @@ Replace `your_api_key_here` with your actual OpenRouter API key. This is require
 
 > **Note:** The traditional form-based prediction works without an API key.
 
-### 4. (Optional) Generate more training data
+### 4. Dataset
 
-The repository already ships with a `houses.csv` dataset. If you want to regenerate or expand it:
+The repository includes `housing_las_vegas_06_22_26.csv`, a real Las Vegas housing dataset with property features and sale prices. This dataset is used for training the Random Forest model.
 
-```bash
-python3 generate_samples.py
-```
-
-This appends **10,000** synthetic samples to `houses.csv` with realistic price estimations based on area, rooms, bathrooms, and age.
+> **Note:** The legacy `generate_samples.py` script generates synthetic data in an older format (area, rooms, bathrooms, age) and is not compatible with the current model. The project now uses real Las Vegas housing data.
 
 ### 5. Train the model
 
@@ -127,7 +127,15 @@ Train the Random Forest model and save it to `house_model.dat`:
 ruby save_model.rb
 ```
 
-> **Note:** A pre-trained `house_model.dat` is already included in the repository. You only need to re-run this step if you modify the training data or model parameters.
+This script reads the Las Vegas housing dataset and trains a Random Forest model with the following features:
+- Construction year
+- Lot size (square feet)
+- Calculated acres
+- Land value
+- Improvement value
+- ZIP code
+
+> **Note:** You need to train the model before running the application. The model file is not included in the repository and must be generated locally.
 
 ---
 
@@ -146,25 +154,27 @@ The application will start on **http://localhost:4567**. Open this URL in your b
 **Traditional Mode** (`http://localhost:4567/`)
 
 1. Fill in the property features on the form:
-   - **Area** — Size of the house in square feet
-   - **Rooms** — Number of rooms
-   - **Bathrooms** — Number of bathrooms
-   - **Age** — Age of the house in years
+   - **Construction Year** — Year the house was built
+   - **Lot Square Feet** — Size of the lot in square feet
+   - **Calculated Acres** — Lot size in acres
+   - **Land Value** — Assessed land value in dollars
+   - **Improvement Value** — Assessed building/improvement value in dollars
+   - **ZIP Code** — Property ZIP code
 2. Click **Predict Price**
-3. View the predicted price (in thousands of dollars)
+3. View the predicted sale price
 
 **AI Text Mode** (`http://localhost:4567/llm`)
 
-1. Describe your house in natural language. Examples:
-   - "A spacious 250 square meter house with 5 bedrooms and 3 bathrooms, built about 10 years ago"
-   - "Small apartment, 60m², 2 rooms, 1 bathroom, pretty new, around 2 years old"
-   - "Old colonial mansion with 400 square meters, 8 rooms, 4 baths, over 50 years old"
+1. Describe your Las Vegas property in natural language. Examples:
+   - "A house built in 2015 with a 7,500 sq ft lot (about 0.17 acres), land value of $80,000, improvements worth $250,000, in ZIP code 891490000"
+   - "Newer home from 2018, sitting on a 10,000 sq ft lot, quarter-acre property, land assessed at $100k, building value $320k, located in 89144"
+   - "Older property from 1985, large 15,000 sq ft lot (0.34 acres), land worth $120,000, improvements at $180,000, ZIP 89115"
 2. Click **Predict with AI**
 3. View the extracted parameters and predicted price
 4. The result page shows:
    - How the LLM interpreted your description
-   - Extracted structured features
-   - Final price prediction from the Random Forest model
+   - Extracted structured features (construction year, lot size, values, ZIP)
+   - Final sale price prediction from the Random Forest model
 
 ---
 
@@ -176,7 +186,7 @@ You can quickly test the model without starting the server:
 ruby test_model.rb
 ```
 
-This loads the serialized model and predicts the price for a sample house (500 sq meters, 10 rooms, 5 bathrooms, 20 years old).
+This loads the serialized model and predicts the sale price for a sample Las Vegas property with predefined features (construction year, lot size, land/improvement values, and ZIP code).
 
 ---
 
@@ -212,7 +222,7 @@ Results are printed to stdout and saved to `benchmark_results.md`.
 
 ### Training Pipeline
 
-1. **Data Loading** — `save_model.rb` reads `houses.csv`, which contains rows of `[area, rooms, bathrooms, age, price]`
+1. **Data Loading** — `save_model.rb` reads `housing_las_vegas_06_22_26.csv`, which contains Las Vegas housing data with columns: `[construction_year, lot_sqft, calc_acres, land_value, improvement_value, zipcode, sale_price]`
 2. **Model Training** — A `Rumale::Ensemble::RandomForestRegressor` is trained with:
    - `n_estimators: 100` (100 decision trees)
    - `max_depth: nil` (trees grow until pure leaves)
@@ -224,43 +234,43 @@ Results are printed to stdout and saved to `benchmark_results.md`.
 1. The `HousePredictor` singleton loads the model once at application startup
 2. When a user submits the form, `PredictionsController` extracts the parameters
 3. The input features are converted to a `Numo::DFloat` array and passed to `model.predict`
-4. The predicted price (in thousands) is displayed on the result page
+4. The predicted sale price is displayed on the result page
 
 ### Tool-Based Pipeline (AI Text Mode)
 
-1. **Natural Language Input** — User describes the house in plain English
+1. **Natural Language Input** — User describes the Las Vegas property in plain English
 2. **LLM Tool Call** — `HousePredictorLLM` is registered as a callable tool with Claude Opus 4.6 via OpenRouter
-3. **Parameter Extraction** — LLM parses the description and calls the tool with `{area, rooms, bathrooms, age}`
+3. **Parameter Extraction** — LLM parses the description and calls the tool with `{construction_year, lot_sqft, calc_acres, land_value, improvement_value, zipcode}`
 4. **RF Execution** — The tool executes `HousePredictor.predict()` with the extracted parameters
 5. **Structured Response** — Tool returns the prediction result back to the LLM
-6. **Result Display** — Shows the extracted features and the final price prediction
+6. **Result Display** — Shows the extracted features and the final sale price prediction
 
 This architecture leverages:
 - **LLM strengths:** Understanding context, handling varied phrasing, autonomous tool use
 - **RF strengths:** Fast, accurate, deterministic predictions based on structured data
 - **Tool Pattern:** LLM decides when and how to call the RF model, enabling more intelligent interactions
 
-### Data Generation
+### Data Source
 
-The `generate_samples.py` script uses a simple linear formula with noise to create realistic training data:
+The project uses real Las Vegas housing sales data from `housing_las_vegas_06_22_26.csv`. This dataset contains actual property features and sale prices, providing realistic training data for the Random Forest model.
 
-```
-price ≈ 2.2 × area + 20 × rooms + 15 × bathrooms − 3 × age ± 5% noise
-```
+> **Note:** The legacy `generate_samples.py` script generates synthetic data using a different schema and is not compatible with the current model.
 
 ---
 
 ## 📊 Dataset Format
 
-The `houses.csv` file has no header row. Each row contains five comma-separated integer values:
+The `housing_las_vegas_06_22_26.csv` file contains Las Vegas housing data with the following columns:
 
-| Column | Description                    | Example |
-| ------ | ------------------------------ | ------- |
-| 1      | Area (sq meters)                   | 200     |
-| 2      | Number of rooms                | 4       |
-| 3      | Number of bathrooms            | 3       |
-| 4      | Age of the house (years)       | 5       |
-| 5      | Price (in thousands of dollars)| 550     |
+| Column | Description | Example |
+| ------ | ----------- | ------- |
+| CONSTYR | Construction year | 2015 |
+| LOTSQFT | Lot size in square feet | 7500 |
+| CALC_ACRES | Calculated lot size in acres | 0.172 |
+| LANDVAL1 | Land value (dollars) | 80000 |
+| IMPVAL | Improvement/building value (dollars) | 250000 |
+| ZIPCODE | Property ZIP code | 891490000 |
+| SALEPRICE | Sale price (dollars) | 345000 |
 
 ---
 
