@@ -3,21 +3,25 @@ require 'dotenv/load'
 require_relative 'house_predictor'
 
 class HousePredictorLLM < RubyLLM::Tool
-  desc "Predicts house price based on area (square meters), number of rooms, number of bathrooms, and age (years)"
+  desc "Predicts Las Vegas house price based on construction year, lot square feet, calculated acres, land value, improvement value, and zipcode"
 
-  def execute(area:, rooms:, bathrooms:, age:)
+  def execute(construction_year:, lot_sqft:, calc_acres:, land_value:, improvement_value:, zipcode:)
     price = HousePredictor.instance.predict(
-      area: area.to_f,
-      rooms: rooms.to_f,
-      bathrooms: bathrooms.to_f,
-      age: age.to_f
+      construction_year: construction_year.to_f,
+      lot_sqft: lot_sqft.to_f,
+      calc_acres: calc_acres.to_f,
+      land_value: land_value.to_f,
+      improvement_value: improvement_value.to_f,
+      zipcode: zipcode.to_f
     )
 
     {
-      area: area.to_f,
-      rooms: rooms.to_f,
-      bathrooms: bathrooms.to_f,
-      age: age.to_f,
+      construction_year: construction_year.to_f,
+      lot_sqft: lot_sqft.to_f,
+      calc_acres: calc_acres.to_f,
+      land_value: land_value.to_f,
+      improvement_value: improvement_value.to_f,
+      zipcode: zipcode.to_f,
       predicted_price: price
     }
   rescue => e

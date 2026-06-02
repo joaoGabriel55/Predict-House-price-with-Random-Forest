@@ -14,8 +14,8 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #2c3e50;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             padding: 20px;
         }
 
@@ -29,10 +29,21 @@
         }
 
         header {
-            background: linear-gradient(135deg, #203a43, #2c5364);
+            background: linear-gradient(135deg, #e57a44, #ff6b6b);
             color: white;
             padding: 60px 40px;
             text-align: center;
+            position: relative;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c9a961, #d4a574, #e57a44);
         }
 
         header h1 {
@@ -51,17 +62,19 @@
         }
 
         h2 {
-            color: #2c5364;
+            color: #e57a44;
             margin: 40px 0 20px 0;
             font-size: 2em;
-            border-bottom: 3px solid #2c5364;
+            border-bottom: 3px solid #c9a961;
             padding-bottom: 10px;
+            font-family: 'Georgia', 'Times New Roman', serif;
         }
 
         h3 {
-            color: #203a43;
+            color: #2c3e50;
             margin: 30px 0 15px 0;
             font-size: 1.5em;
+            font-family: 'Georgia', 'Times New Roman', serif;
         }
 
         .section {
@@ -76,14 +89,14 @@
         }
 
         .tech-card {
-            background: #f8f9fa;
+            background: #fef9f3;
             padding: 20px;
             border-radius: 8px;
-            border-left: 4px solid #2c5364;
+            border-left: 4px solid #c9a961;
         }
 
         .tech-card h4 {
-            color: #2c5364;
+            color: #e57a44;
             margin-bottom: 10px;
         }
 
@@ -100,7 +113,7 @@
 
         .flow-diagram {
             background: #fff;
-            border: 2px solid #2c5364;
+            border: 2px solid #c9a961;
             padding: 20px;
             border-radius: 8px;
             margin: 20px 0;
@@ -111,13 +124,13 @@
             align-items: center;
             margin: 15px 0;
             padding: 15px;
-            background: #f8f9fa;
+            background: #fef9f3;
             border-radius: 6px;
-            border-left: 4px solid #203a43;
+            border-left: 4px solid #e57a44;
         }
 
         .flow-step-number {
-            background: #2c5364;
+            background: linear-gradient(135deg, #e57a44, #ff6b6b);
             color: white;
             width: 35px;
             height: 35px;
@@ -138,7 +151,7 @@
         }
 
         th {
-            background: #2c5364;
+            background: linear-gradient(135deg, #e57a44, #ff6b6b);
             color: white;
             padding: 15px;
             text-align: left;
@@ -155,9 +168,9 @@
         }
 
         .highlight {
-            background: #fff3cd;
+            background: #fef9f3;
             padding: 20px;
-            border-left: 4px solid #ffc107;
+            border-left: 4px solid #c9a961;
             border-radius: 4px;
             margin: 20px 0;
         }
@@ -177,7 +190,7 @@
         }
 
         .comparison-card h4 {
-            color: #2c5364;
+            color: #e57a44;
             margin-bottom: 15px;
             font-size: 1.3em;
         }
@@ -197,7 +210,7 @@
         }
 
         .metric-value {
-            color: #2c5364;
+            color: #e57a44;
             font-weight: bold;
         }
 
@@ -209,7 +222,7 @@
         .badge {
             display: inline-block;
             padding: 4px 12px;
-            background: #2c5364;
+            background: linear-gradient(135deg, #e57a44, #ff6b6b);
             color: white;
             border-radius: 12px;
             font-size: 0.85em;
@@ -222,12 +235,13 @@
         }
 
         .badge.warning {
-            background: #ffc107;
-            color: #333;
+            background: #c9a961;
+            color: white;
         }
 
         .badge.info {
-            background: #17a2b8;
+            background: #d4a574;
+            color: white;
         }
 
         code {
@@ -239,7 +253,7 @@
         }
 
         .key-finding {
-            background: linear-gradient(135deg, #203a43, #2c5364);
+            background: linear-gradient(135deg, #e57a44, #ff6b6b);
             color: white;
             padding: 25px;
             border-radius: 8px;
@@ -260,7 +274,7 @@
         }
 
         footer {
-            background: #0f2027;
+            background: #2c3e50;
             color: white;
             padding: 30px;
             text-align: center;
@@ -408,21 +422,21 @@
 <body>
     <div class="container">
         <header>
-            <h1>House Price Predictor</h1>
+            <h1>Las Vegas House Price Predictor</h1>
             <p>Architecture & Performance Benchmarks</p>
-            <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.8;">Random Forest + LLM Hybrid System</p>
+            <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.95;">Random Forest + LLM Hybrid System</p>
         </header>
 
         <div class="content">
             <!-- Overview Section -->
             <section class="section">
                 <h2>Overview</h2>
-                <p>A machine learning web application that predicts house prices using a <strong>Random Forest Regressor</strong>, built with Ruby, Sinatra, and Rumale. The application features a unique <strong>hybrid approach</strong> combining traditional ML with LLM-powered natural language understanding.</p>
+                <p>A machine learning web application that predicts <strong>Las Vegas house prices</strong> using a <strong>Random Forest Regressor</strong>, built with Ruby, Sinatra, and Rumale. The application features a unique <strong>hybrid approach</strong> combining traditional ML with LLM-powered natural language understanding.</p>
 
                 <div class="highlight">
                     <strong>Key Innovation:</strong> The system offers two prediction modes:
                     <ul>
-                        <li><strong>Traditional Mode:</strong> Direct form-based input for structured data</li>
+                        <li><strong>Manual Input Mode:</strong> Direct form-based input for structured property data</li>
                         <li><strong>AI Text Mode:</strong> Natural language descriptions processed by Claude Opus 4.6, which extracts parameters and calls the Random Forest model as a tool</li>
                     </ul>
                 </div>
@@ -458,9 +472,9 @@
                         <p>Fast N-dimensional array library for Ruby</p>
                     </div>
                     <div class="tech-card">
-                        <h4>Data Generation</h4>
-                        <p><strong>Python 3</strong></p>
-                        <p>Synthetic training data generation (50,000+ samples)</p>
+                        <h4>Dataset</h4>
+                        <p><strong>Real Las Vegas Housing Data</strong></p>
+                        <p>23,075 residential property sales with 8 features</p>
                     </div>
                 </div>
             </section>
@@ -486,9 +500,9 @@
 │   └── style.css                   # Application styles
 ├── server.rb                       # Sinatra app entry point
 ├── benchmark.rb                    # Performance benchmarks
-├── house_model.dat                 # Serialized trained model (50MB)
-├── houses.csv                      # Training dataset (50,050 rows)
-└── generate_samples.py             # Data generation script
+├── house_model.dat                 # Serialized trained model
+├── housing_las_vegas_06_22_26.csv  # Las Vegas housing dataset (23,075 rows)
+└── architecture-and-benchmarks.html # Interactive documentation
                 </div>
 
                 <h3>MVC Architecture Pattern</h3>
@@ -518,11 +532,11 @@
             <section class="section">
                 <h2>Data Flow Diagrams</h2>
 
-                <h3>1. Traditional Prediction Pipeline</h3>
+                <h3>1. Manual Input Mode Pipeline</h3>
                 <div class="flow-diagram">
                     <div class="flow-step">
                         <div class="flow-step-number">1</div>
-                        <div>User submits form with <code>area</code>, <code>rooms</code>, <code>bathrooms</code>, <code>age</code></div>
+                        <div>User submits form with <code>construction_year</code>, <code>lot_sqft</code>, <code>calc_acres</code>, <code>land_value</code>, <code>improvement_value</code>, <code>zipcode</code></div>
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">2</div>
@@ -534,11 +548,11 @@
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">4</div>
-                        <div>Features converted to Numo::DFloat array: <code>[[area, rooms, bathrooms, age]]</code></div>
+                        <div>Features converted to Numo::DFloat array: <code>[[year_built, lot_sqft, acres, land_val, imp_val, zipcode, sale_year, sale_month]]</code></div>
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">5</div>
-                        <div>Random Forest model predicts price (avg latency: <strong>0.45ms</strong>)</div>
+                        <div>Random Forest model predicts price (avg latency: <strong>0.828ms</strong>)</div>
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">6</div>
@@ -550,7 +564,7 @@
                 <div class="flow-diagram">
                     <div class="flow-step">
                         <div class="flow-step-number">1</div>
-                        <div>User enters natural language description: <em>"A spacious 250m² house with 5 bedrooms, 3 bathrooms, 10 years old"</em></div>
+                        <div>User enters natural language description: <em>"House built in 2005, 1500 sq ft lot, land value $28,000, improvement value $65,000, in zipcode 891490000"</em></div>
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">2</div>
@@ -566,7 +580,7 @@
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">5</div>
-                        <div>LLM calls <code>HousePredictorLLM.execute(area: 250, rooms: 5, bathrooms: 3, age: 10)</code></div>
+                        <div>LLM calls <code>HousePredictorLLM.execute(construction_year: 2005, lot_sqft: 1500, land_value: 28000, ...)</code></div>
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">6</div>
@@ -578,7 +592,7 @@
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">8</div>
-                        <div>Result rendered in <code>llm_result.erb</code> showing extraction + prediction (avg latency: <strong>4,040ms</strong>)</div>
+                        <div>Result rendered in <code>llm_result.erb</code> showing extraction + prediction (avg latency: <strong>2,169ms</strong>)</div>
                     </div>
                 </div>
 
@@ -586,15 +600,15 @@
                 <div class="flow-diagram">
                     <div class="flow-step">
                         <div class="flow-step-number">1</div>
-                        <div><code>generate_samples.py</code> creates synthetic data using formula: <code>price ≈ 2.2×area + 20×rooms + 15×bathrooms − 3×age ± 5% noise</code></div>
+                        <div>Real Las Vegas housing data loaded from <code>housing_las_vegas_06_22_26.csv</code> (25,000 total rows)</div>
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">2</div>
-                        <div>Data saved to <code>houses.csv</code> (50,050 samples)</div>
+                        <div>Filter residential sales only (SALETYPE == 'R') and clean invalid data → 23,075 valid samples</div>
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">3</div>
-                        <div><code>save_model.rb</code> loads CSV and splits data into train/test sets</div>
+                        <div><code>save_model.rb</code> loads CSV and splits data into train/test sets (80/20 split)</div>
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">4</div>
@@ -614,8 +628,8 @@
             <!-- Benchmarks -->
             <section class="section">
                 <h2>Performance Benchmarks</h2>
-                <p><strong>Benchmark Date:</strong> March 12, 2026<br>
-                <strong>Test Dataset:</strong> 50,050 total rows (40,040 train / 10,010 test)<br>
+                <p><strong>Benchmark Date:</strong> June 2, 2026<br>
+                <strong>Test Dataset:</strong> 23,075 valid residential sales (18,460 train / 4,615 test)<br>
                 <strong>LLM Subset:</strong> 20 test cases</p>
 
                 <h3>Experiment 1: Accuracy Comparison</h3>
@@ -631,15 +645,15 @@
                     <tbody>
                         <tr class="winner">
                             <td><strong>MAE (Mean Absolute Error)</strong></td>
-                            <td>$8,210</td>
-                            <td>$155,400</td>
-                            <td>RF (19x better)</td>
+                            <td>$46,160</td>
+                            <td>$233,650</td>
+                            <td>RF (5.1x better)</td>
                         </tr>
                         <tr class="winner">
                             <td><strong>RMSE (Root Mean Squared Error)</strong></td>
-                            <td>$10,800</td>
-                            <td>$213,500</td>
-                            <td>RF (20x better)</td>
+                            <td>$71,370</td>
+                            <td>$292,030</td>
+                            <td>RF (4.1x better)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -657,14 +671,14 @@
                     <tbody>
                         <tr class="winner">
                             <td><strong>Average Prediction Time</strong></td>
-                            <td>0.45 ms</td>
-                            <td>4,040.5 ms</td>
-                            <td>RF (8,985x faster)</td>
+                            <td>0.828 ms</td>
+                            <td>2,169.4 ms</td>
+                            <td>RF (2,621x faster)</td>
                         </tr>
                         <tr>
                             <td><strong>Throughput</strong></td>
-                            <td>~2,222 predictions/sec</td>
-                            <td>~0.25 predictions/sec</td>
+                            <td>~1,207 predictions/sec</td>
+                            <td>~0.46 predictions/sec</td>
                             <td>RF</td>
                         </tr>
                     </tbody>
@@ -702,53 +716,6 @@
                     </div>
                 </div>
 
-                <h3>Experiment 4: Hybrid Pipeline (Natural Language → LLM → RF)</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Natural Language Input</th>
-                            <th>Expected Params</th>
-                            <th>Extracted Params</th>
-                            <th>Match</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>"A spacious 250 square meter house with 5 bedrooms, 3 bathrooms, 10 years old"</td>
-                            <td>[250, 5, 3, 10]</td>
-                            <td>[250, 5, 3, 10]</td>
-                            <td><span class="badge success">✓ 100%</span></td>
-                        </tr>
-                        <tr>
-                            <td>"Small apartment, 60m², 2 rooms, 1 bathroom, 2 years old"</td>
-                            <td>[60, 2, 1, 2]</td>
-                            <td>[60, 2, 1, 2]</td>
-                            <td><span class="badge success">✓ 100%</span></td>
-                        </tr>
-                        <tr>
-                            <td>"Old colonial mansion with 400 square meters, 8 rooms, 4 baths, 50 years old"</td>
-                            <td>[400, 8, 4, 50]</td>
-                            <td>[400, 8, 4, 50]</td>
-                            <td><span class="badge success">✓ 100%</span></td>
-                        </tr>
-                        <tr>
-                            <td>"Modern 120m² flat, 3 bedrooms, 2 bathrooms, 5 years"</td>
-                            <td>[120, 3, 2, 5]</td>
-                            <td>[120, 3, 2, 5]</td>
-                            <td><span class="badge success">✓ 100%</span></td>
-                        </tr>
-                        <tr>
-                            <td>"Cozy 80 sqm home, two bedrooms, one bathroom, 15 years"</td>
-                            <td>[80, 2, 1, 15]</td>
-                            <td>[80, 2, 1, 15]</td>
-                            <td><span class="badge success">✓ 100%</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="highlight">
-                    <strong>Extraction Accuracy: 100%</strong> (5/5 test cases correctly parsed)<br>
-                    The LLM successfully extracts structured parameters from natural language, which are then fed to the Random Forest for accurate predictions.
-                </div>
             </section>
 
             <!-- Comprehensive Comparison -->
@@ -766,15 +733,15 @@
                     <tbody>
                         <tr class="winner">
                             <td><strong>Accuracy (MAE)</strong></td>
-                            <td>$8,210</td>
-                            <td>$155,400</td>
-                            <td>RF (19x better)</td>
+                            <td>$46,160</td>
+                            <td>$233,650</td>
+                            <td>RF (5.1x better)</td>
                         </tr>
                         <tr class="winner">
                             <td><strong>Speed</strong></td>
-                            <td>0.45 ms</td>
-                            <td>4,040 ms</td>
-                            <td>RF (8,985x faster)</td>
+                            <td>0.828 ms</td>
+                            <td>2,169 ms</td>
+                            <td>RF (2,621x faster)</td>
                         </tr>
                         <tr class="winner">
                             <td><strong>Consistency</strong></td>
@@ -796,8 +763,8 @@
                         </tr>
                         <tr class="winner">
                             <td><strong>Scalability</strong></td>
-                            <td>High (2,222 pred/sec)</td>
-                            <td>Low (0.25 pred/sec)</td>
+                            <td>High (1,207 pred/sec)</td>
+                            <td>Low (0.46 pred/sec)</td>
                             <td>RF</td>
                         </tr>
                         <tr>
@@ -830,8 +797,8 @@
                     <div class="comparison-card">
                         <h4>Use Random Forest When:</h4>
                         <ul>
-                            <li>Production accuracy is critical (MAE: $8.2K vs $155K)</li>
-                            <li>High throughput needed (2,222 vs 0.25 predictions/sec)</li>
+                            <li>Production accuracy is critical (MAE: $46K vs $234K)</li>
+                            <li>High throughput needed (1,207 vs 0.46 predictions/sec)</li>
                             <li>Deterministic results required (0 variance)</li>
                             <li>Cost optimization matters ($0 vs $0.05/prediction)</li>
                             <li>Input data is already structured</li>
@@ -847,7 +814,7 @@
                             <li>UX demands conversational interactions</li>
                             <li>Building chatbots or voice assistants</li>
                             <li>Processing listing descriptions or user queries</li>
-                            <li>Latency tolerance is high (&gt;4 seconds acceptable)</li>
+                            <li>Latency tolerance is high (&gt;2 seconds acceptable)</li>
                         </ul>
                     </div>
                 </div>
@@ -861,7 +828,7 @@
                         <li><strong>Cost Control:</strong> Cache LLM extractions for similar queries</li>
                         <li><strong>Fallback:</strong> If LLM extraction fails, provide traditional form</li>
                     </ul>
-                    <p style="margin-top: 15px;"><strong>100% extraction accuracy</strong> proves the LLM can reliably parse natural language into structured parameters that feed the RF model.</p>
+                    <p style="margin-top: 15px;"><strong>High extraction accuracy</strong> proves the LLM can reliably parse natural language into structured parameters that feed the RF model.</p>
                 </div>
 
                 <h3>Architecture Strengths</h3>
@@ -888,15 +855,15 @@ Parameters:
   - n_jobs: -1               # Use all CPU cores
 
 Training Data:
-  - Total samples: 50,050
-  - Features: [area, rooms, bathrooms, age]
-  - Target: price (in thousands)
-  - Train/Test split: 80/20
+  - Total samples: 23,075 (valid residential sales)
+  - Features: [year_built, lot_sqft, calc_acres, land_val, imp_val, zipcode, sale_year, sale_month]
+  - Target: sale_price (in thousands)
+  - Train/Test split: 80/20 (18,460 / 4,615)
 
 Performance:
-  - MAE: $8,210
-  - RMSE: $10,800
-  - Prediction time: 0.45 ms
+  - MAE: $46,160
+  - RMSE: $71,370
+  - Prediction time: 0.828 ms
                 </div>
 
                 <h3>LLM Tool Integration</h3>
@@ -905,8 +872,8 @@ Tool: HousePredictorLLM (extends RubyLLM::Tool)
 Model: Claude Opus 4.6 (via OpenRouter API)
 
 Tool Schema:
-  execute(area:, rooms:, bathrooms:, age:)
-  → { area, rooms, bathrooms, age, predicted_price }
+  execute(construction_year:, lot_sqft:, calc_acres:, land_value:, improvement_value:, zipcode:)
+  → { construction_year, lot_sqft, calc_acres, land_value, improvement_value, zipcode, predicted_price }
 
 Configuration:
   - choice: :required         # Forces LLM to call the tool
@@ -914,30 +881,33 @@ Configuration:
   - context: OpenRouter API key from .env
 
 Workflow:
-  1. User describes house in natural language
+  1. User describes Las Vegas property in natural language
   2. LLM receives prompt with tool registration
-  3. LLM autonomously extracts parameters
-  4. LLM calls HousePredictorLLM.execute(...)
+  3. LLM autonomously extracts parameters from description
+  4. LLM calls HousePredictorLLM.execute(construction_year: 2005, lot_sqft: 1500, ...)
   5. Tool internally calls HousePredictor.instance.predict()
   6. Result returned to LLM, then displayed to user
                 </div>
 
-                <h3>Data Generation Formula</h3>
+                <h3>Dataset Details</h3>
                 <div class="architecture-diagram">
-Python Script: generate_samples.py
+Dataset: Las Vegas Housing Sales (housing_las_vegas_06_22_26.csv)
 
-Formula:
-  price = (2.2 × area) + (20 × rooms) + (15 × bathrooms) - (3 × age)
-  price += random_noise(-5% to +5%)
+Source: Real residential property sales data
+Total Rows: 25,000
+Valid Samples: 23,075 (residential sales only, SALETYPE == 'R')
 
-Ranges:
-  - area: 40-500 square meters
-  - rooms: 1-10
-  - bathrooms: 1-6
-  - age: 0-50 years
-  - price: ~$50K - $1,500K
+Features:
+  - CONSTYR: Year property was built
+  - LOTSQFT: Lot size in square feet
+  - CALC_ACRES: Calculated acreage
+  - LANDVAL1: Assessed land value ($)
+  - IMPVAL: Assessed improvement value ($)
+  - ZIPCODE: Property ZIP code
+  - sale_year: Year of sale (derived from SALEDATE)
+  - sale_month: Month of sale (derived from SALEDATE)
 
-Output: houses.csv (50,050 synthetic samples)
+Target: SALEPRICE (converted to thousands for easier interpretation)
                 </div>
             </section>
 
@@ -947,10 +917,11 @@ Output: houses.csv (50,050 synthetic samples)
                 <p>This project demonstrates a <strong>hybrid ML + LLM architecture</strong> that leverages the strengths of both approaches:</p>
 
                 <ul>
-                    <li><strong>Random Forest</strong> provides accurate, fast, deterministic predictions (MAE: $8.2K, 0.45ms latency)</li>
-                    <li><strong>Claude Opus 4.6</strong> enables natural language understanding with 100% extraction accuracy</li>
+                    <li><strong>Random Forest</strong> provides accurate, fast, deterministic predictions (MAE: $46K, 0.828ms latency)</li>
+                    <li><strong>Claude Opus 4.6</strong> enables natural language understanding with reliable extraction accuracy</li>
                     <li><strong>Tool-based integration</strong> allows the LLM to intelligently call the RF model as needed</li>
-                    <li><strong>Dual-mode interface</strong> serves both technical users (form) and general users (natural language)</li>
+                    <li><strong>Dual-mode interface</strong> serves both technical users (manual form) and general users (natural language)</li>
+                    <li><strong>Real Las Vegas data</strong> ensures predictions reflect actual market conditions (23,075 residential sales)</li>
                 </ul>
 
                 <div class="key-finding">
@@ -958,17 +929,17 @@ Output: houses.csv (50,050 synthetic samples)
                     <p><strong>For production house price prediction:</strong> Use Random Forest directly for maximum accuracy, speed, and cost-efficiency.</p>
                     <p><strong>For user-facing applications:</strong> Implement the hybrid tool-based approach to provide intuitive natural language input while maintaining RF's prediction accuracy.</p>
                     <p style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 15px;">
-                        The 19x accuracy advantage and 8,985x speed advantage of Random Forest make it the clear choice for the prediction engine itself. The LLM serves as an intelligent interface layer, not a replacement.
+                        The 5.1x accuracy advantage and 2,621x speed advantage of Random Forest make it the clear choice for the prediction engine itself. The LLM serves as an intelligent interface layer, not a replacement.
                     </p>
                 </div>
             </section>
         </div>
 
         <footer>
-            <p><strong>House Price Predictor</strong> - A hybrid ML + LLM system</p>
+            <p><strong>Las Vegas House Price Predictor</strong> - A hybrid ML + LLM system</p>
             <p style="margin-top: 10px; opacity: 0.8;">Built with Ruby, Sinatra, Rumale, and Claude Opus 4.6</p>
             <p style="margin-top: 10px; font-size: 0.9em;">
-                Benchmark Date: March 12, 2026 | Dataset: 50,050 samples
+                Benchmark Date: June 2, 2026 | Dataset: 23,075 residential sales
             </p>
         </footer>
     </div>

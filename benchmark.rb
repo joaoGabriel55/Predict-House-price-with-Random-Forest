@@ -10,15 +10,14 @@
 #
 # Usage:
 #   1. Set your API key:  export OPENROUTER_API_KEY="sk-or-..."
-#   2. Make sure houses.csv exists in the same directory
-#   3. Run: ruby benchmark_experiments.rb
+#   2. Make sure housing_las_vegas_06_22_26.csv exists in the same directory
+#   3. Run: ruby benchmark.rb
 #
-# This script runs 4 experiments:
+# This script runs 3 experiments:
 #   1. Accuracy comparison (MAE / RMSE)
 #       MAE (Mean Absolute Error) and RMSE (Root Mean Square Error) are crucial metrics for evaluating regression models.
 #   2. Latency comparison
 #   3. Consistency (variance) test
-#   4. Hybrid pipeline (LLM extraction + RF prediction)
 #
 # Output: prints results to STDOUT and saves a summary to benchmark_results.md
 # ============================================================================
@@ -38,14 +37,15 @@ require 'numo/narray'
 API_KEY        = ENV.fetch('OPENROUTER_API_KEY') { abort 'Set OPENROUTER_API_KEY env var' }
 API_URL        = 'https://openrouter.ai/api/v1/chat/completions'
 MODEL          = 'anthropic/claude-opus-4.6' # Change to any model on OpenRouter
-CSV_FILE       = 'housing_las_vegas_05_05_17.csv'
+CSV_FILE       = 'housing_las_vegas_06_22_26.csv'
 TEST_RATIO     = 0.2          # 20% of data for testing
 CONSISTENCY_N  = 10           # number of repeated LLM calls per test case
 RANDOM_SEED    = 42
 
 # Feature columns to use for prediction
-FEATURE_COLS   = ['bedrooms', 'full_bathrooms', 'half_bathrooms', 'size_sqft', 'lot_size']
-TARGET_COL     = 'price'
+# Note: sale_year and sale_month will be derived from SALEDATE
+FEATURE_COLS   = ['CONSTYR', 'LOTSQFT', 'CALC_ACRES', 'LANDVAL1', 'IMPVAL', 'ZIPCODE', 'sale_year', 'sale_month']
+TARGET_COL     = 'SALEPRICE'
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -117,12 +117,27 @@ csv_data = CSV.read(CSV_FILE, headers: true)
 
 # Extract features and target, filtering out rows with missing values
 data = csv_data.map do |row|
-  features = FEATURE_COLS.map { |col| row[col].to_f }
-  # Convert price to thousands (K) - prices are like "22e4" = 220000 = 220K
+  # Only use residential sales (SALETYPE == 'R')
+  next unless row['SALETYPE'] == 'R'
+
+  # Parse SALEDATE (YYYYMMDD) into year and month
+  saledate = row['SALEDATE'].to_s
+  next if saledate.length != 8
+
+  sale_year = saledate[0..3].to_i
+  sale_month = saledate[4..5].to_i
+
+  # Extract base features from CSV
+  base_features = ['CONSTYR', 'LOTSQFT', 'CALC_ACRES', 'LANDVAL1', 'IMPVAL', 'ZIPCODE'].map { |col| row[col].to_f }
+
+  # Combine with derived features
+  features = base_features + [sale_year.to_f, sale_month.to_f]
+
+  # Convert price to thousands (K) for easier interpretation
   price = row[TARGET_COL].to_f / 1000.0
 
-  # Skip rows with invalid data
-  next if features.any?(&:zero?) || price.zero?
+  # Skip rows with invalid data (but CALC_ACRES can be 0 for condos)
+  next if base_features[0..1].any?(&:zero?) || price.zero? || sale_year < 1900 || sale_month < 1 || sale_month > 12
 
   features + [price]
 end.compact
@@ -197,18 +212,19 @@ test_subset_size = [test_features.size, 20].min
 puts "Running LLM predictions on #{test_subset_size} test cases (may take a few minutes)..."
 
 test_features[0...test_subset_size].each_with_index do |features, i|
-  bedrooms, full_bath, half_bath, sqft, lot_sqft = features
-  total_bath = full_bath + (half_bath * 0.5)
+  year_built, lot_sqft, acres, land_val, imp_val, zipcode, sale_year, sale_month = features
 
   prompt = <<~PROMPT
     You are a Las Vegas house price estimator. Based on these features, predict the house price in thousands of dollars (K).
     Reply with ONLY a number followed by K. Example: 450K
 
     Property Features:
-    - Bedrooms: #{bedrooms.to_i}
-    - Bathrooms: #{total_bath.round(1)} (#{full_bath.to_i} full, #{half_bath.to_i} half)
-    - Square Footage: #{sqft.to_i} sqft
-    - Lot Size: #{lot_sqft.to_i} sqft
+    - Year Built: #{year_built.to_i}
+    - Lot Size: #{lot_sqft.to_i} sqft (#{acres.round(2)} acres)
+    - Assessed Land Value: $#{land_val.to_i}
+    - Assessed Improvement Value: $#{imp_val.to_i}
+    - ZIP Code: #{zipcode.to_i}
+    - Sale Date: #{sale_month.to_i}/#{sale_year.to_i}
 
     Predicted price:
   PROMPT
@@ -262,9 +278,8 @@ consistency_cases = test_features[0..2]
 consistency_actual = test_prices[0..2]
 
 consistency_cases.each_with_index do |features, ci|
-  bedrooms, full_bath, half_bath, sqft, lot_sqft = features
-  total_bath = full_bath + (half_bath * 0.5)
-  puts "\nCase #{ci + 1}: #{bedrooms.to_i}bed, #{total_bath.round(1)}bath, #{sqft.to_i}sqft, #{lot_sqft.to_i}sqft lot (Actual: #{consistency_actual[ci].round(1)}K)"
+  year_built, lot_sqft, acres, land_val, imp_val, zipcode, sale_year, sale_month = features
+  puts "\nCase #{ci + 1}: Built #{year_built.to_i}, #{lot_sqft.to_i}sqft lot, Land: $#{land_val.to_i}, Improvements: $#{imp_val.to_i} (Actual: #{consistency_actual[ci].round(1)}K)"
 
   # RF is deterministic
   rf_input = Numo::DFloat[*features].expand_dims(0)
@@ -279,10 +294,12 @@ consistency_cases.each_with_index do |features, ci|
       Reply with ONLY a number followed by K. Example: 450K
 
       Property Features:
-      - Bedrooms: #{bedrooms.to_i}
-      - Bathrooms: #{total_bath.round(1)} (#{full_bath.to_i} full, #{half_bath.to_i} half)
-      - Square Footage: #{sqft.to_i} sqft
-      - Lot Size: #{lot_sqft.to_i} sqft
+      - Year Built: #{year_built.to_i}
+      - Lot Size: #{lot_sqft.to_i} sqft (#{acres.round(2)} acres)
+      - Assessed Land Value: $#{land_val.to_i}
+      - Assessed Improvement Value: $#{imp_val.to_i}
+      - ZIP Code: #{zipcode.to_i}
+      - Sale Date: #{sale_month.to_i}/#{sale_year.to_i}
 
       Predicted price:
     PROMPT
@@ -302,76 +319,6 @@ end
 puts
 
 # ============================================================================
-# EXPERIMENT 4 — Hybrid Pipeline (LLM extraction + RF prediction)
-# ============================================================================
-
-puts "=" * 70
-puts "EXPERIMENT 4: Hybrid Pipeline (NL → LLM extraction → RF prediction)"
-puts "=" * 70
-
-natural_language_inputs = [
-  { text: "Spacious single family home with 4 bedrooms, 3 full baths and 1 half bath, about 2500 square feet on a 7000 sqft lot", expected: [4, 3, 1, 2500, 7000] },
-  { text: "Cozy 3 bed 2 bath house, 1800 sqft, sits on 5500 square foot lot", expected: [3, 2, 0, 1800, 5500] },
-  { text: "Luxury property, 5 bedrooms, 4.5 baths (4 full, 1 half), massive 4200 sqft floor plan, 10000 sqft lot", expected: [5, 4, 1, 4200, 10000] },
-  { text: "Small starter home, 2 bedrooms, 2 bathrooms, compact 1200 square feet on a 3000 sqft lot", expected: [2, 2, 0, 1200, 3000] },
-  { text: "Modern home with three bedrooms, two and a half baths, 2000 square feet of living space, 6500 sqft lot", expected: [3, 2, 1, 2000, 6500] },
-]
-
-extraction_results = []
-
-natural_language_inputs.each_with_index do |input, i|
-  prompt = <<~PROMPT
-    Extract house features from the following description. Return ONLY a JSON object with these exact keys:
-    {"bedrooms": <number>, "full_bathrooms": <number>, "half_bathrooms": <number>, "size_sqft": <number>, "lot_size": <number>}
-
-    Description: "#{input[:text]}"
-
-    JSON:
-  PROMPT
-
-  result = call_llm(prompt, max_tokens: 100, temperature: 0.0)
-
-  begin
-    # Try to extract JSON from response
-    json_match = result[:text].match(/\{[^}]+\}/)
-    parsed = JSON.parse(json_match[0])
-    extracted = [parsed['bedrooms'], parsed['full_bathrooms'], parsed['half_bathrooms'], parsed['size_sqft'], parsed['lot_size']]
-  rescue StandardError => e
-    puts "  [#{i + 1}] Extraction failed: #{e.message}"
-    puts "  Raw response: #{result[:text]}"
-    extracted = [0, 0, 0, 0, 0]
-  end
-
-  expected = input[:expected]
-  correct = extracted == expected
-
-  # Run RF prediction with extracted features
-  rf_input = Numo::DFloat[*extracted.map(&:to_f)].expand_dims(0)
-  rf_pred  = model.predict(rf_input)[0]
-
-  # Also run RF with correct features for comparison
-  rf_correct_input = Numo::DFloat[*expected.map(&:to_f)].expand_dims(0)
-  rf_correct_pred  = model.predict(rf_correct_input)[0]
-
-  extraction_results << {
-    text: input[:text],
-    expected: expected,
-    extracted: extracted,
-    correct: correct,
-    rf_pred_extracted: rf_pred.round(1),
-    rf_pred_correct: rf_correct_pred.round(1)
-  }
-
-  puts "  [#{i + 1}] Expected: #{expected} | Extracted: #{extracted} | Match: #{correct ? '✅' : '❌'}"
-  puts "       RF price (from extracted): #{rf_pred.round(1)}K | RF price (from correct): #{rf_correct_pred.round(1)}K"
-  sleep(0.5)
-end
-
-accuracy = extraction_results.count { |r| r[:correct] }.to_f / extraction_results.size * 100
-puts "\nExtraction accuracy: #{accuracy.round(1)}%"
-puts
-
-# ============================================================================
 # Summary — Save to Markdown
 # ============================================================================
 
@@ -385,9 +332,10 @@ markdown = <<~MD
   **Date:** #{Time.now.strftime('%Y-%m-%d %H:%M')}
   **LLM Model:** #{MODEL}
   **RF Estimators:** 100
-  **Dataset:** Las Vegas Housing (#{data.size} valid rows from #{csv_data.size} total)
+  **Dataset:** Las Vegas Housing (#{data.size} valid residential sales from #{csv_data.size} total rows)
   **Train/Test Split:** #{train_data.size} / #{test_data.size}
-  **Features:** Bedrooms, Full Bathrooms, Half Bathrooms, Square Footage, Lot Size
+  **Features:** Year Built, Lot Size (sqft), Lot Size (acres), Assessed Land Value, Assessed Improvement Value, ZIP Code, Sale Year, Sale Month
+  **Target:** Sale Price (in thousands)
   **Test subset for LLM:** #{test_subset_size} cases
 
   ## Experiment 1 — Accuracy (on #{test_subset_size} test cases)
@@ -397,6 +345,8 @@ markdown = <<~MD
   | MAE    | #{rf_mae_subset.round(2)}K | #{llm_mae.round(2)}K |
   | RMSE   | #{rf_rmse_subset.round(2)}K | #{llm_rmse.round(2)}K |
 
+  **Winner:** #{rf_mae_subset < llm_mae ? 'Random Forest' : 'LLM'} (lower error is better)
+
   ## Experiment 2 — Latency
 
   | Metric | Random Forest | LLM |
@@ -404,25 +354,19 @@ markdown = <<~MD
   | Avg latency | #{rf_avg_latency.round(3)} ms | #{llm_avg_latency.round(1)} ms |
   | Speedup | — | ~#{(llm_avg_latency / rf_avg_latency).round(0)}x slower |
 
+  **Winner:** Random Forest (#{(llm_avg_latency / rf_avg_latency).round(0)}x faster)
+
   ## Experiment 3 — Consistency (#{CONSISTENCY_N} repeated predictions per case)
 
   | Case | RF Variance | LLM Std Dev |
   |------|-------------|-------------|
   #{consistency_cases.each_with_index.map do |features, ci|
-    "| #{features.map(&:to_i).join(', ')} | 0 (deterministic) | — (see raw output) |"
+    "| #{features[0].to_i}, #{features[1].to_i}, #{features[3].to_i} | 0 (deterministic) | — (see raw output) |"
   end.join("\n")}
 
   _(Fill in LLM std dev values from the raw output above)_
 
-  ## Experiment 4 — Hybrid Pipeline (NL → LLM → RF)
-
-  | Input | Expected | Extracted | Match | RF Price (extracted) | RF Price (correct) |
-  |-------|----------|-----------|-------|---------------------|--------------------|
-  #{extraction_results.map do |r|
-    "| #{r[:text][0..40]}... | #{r[:expected]} | #{r[:extracted]} | #{r[:correct] ? '✅' : '❌'} | #{r[:rf_pred_extracted]}K | #{r[:rf_pred_correct]}K |"
-  end.join("\n")}
-
-  **Extraction accuracy:** #{accuracy.round(1)}%
+  **Winner:** Random Forest (deterministic, zero variance)
 MD
 
 File.write('benchmark_results.md', markdown)

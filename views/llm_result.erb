@@ -9,95 +9,112 @@
     .extracted-params {
       margin-top: 20px;
       padding: 20px;
-      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-      border-radius: 12px;
-      animation: fadeIn 0.4s ease;
+      background: #fef9f3;
+      border: 1px solid #e8e8e8;
+      border-radius: 8px;
+      animation: fadeIn 0.3s ease;
     }
 
     .extracted-params h2 {
-      font-size: 1rem;
-      color: #1565c0;
-      margin-bottom: 12px;
+      font-size: 0.938rem;
+      color: #2c3e50;
+      margin-bottom: 16px;
       text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      font-weight: 600;
     }
 
     .params-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
       margin-bottom: 16px;
     }
 
     .param-item {
       background: white;
       padding: 12px;
-      border-radius: 8px;
+      border-radius: 6px;
       text-align: center;
+      border: 1px solid #f0f0f0;
+      transition: all 0.2s ease;
+    }
+
+    .param-item:hover {
+      border-color: #c9a961;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .param-label {
       font-size: 0.75rem;
-      color: #666;
+      color: #7f8c8d;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-bottom: 4px;
+      font-weight: 600;
     }
 
     .param-value {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #1565c0;
+      font-size: 1.063rem;
+      font-weight: 600;
+      color: #2c3e50;
     }
 
     .original-text {
       margin-top: 16px;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 8px;
-      border-left: 4px solid #1565c0;
+      padding: 14px;
+      background: white;
+      border-radius: 6px;
+      border-left: 3px solid #c9a961;
     }
 
     .original-text .label {
       font-size: 0.75rem;
-      color: #666;
+      color: #7f8c8d;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      font-weight: 600;
     }
 
     .original-text .text {
-      font-size: 0.9rem;
-      color: #333;
+      font-size: 0.875rem;
+      color: #2c3e50;
       font-style: italic;
-      line-height: 1.4;
+      line-height: 1.5;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>🏠 Price Prediction</h1>
-    <p class="subtitle">AI-Powered Analysis Complete</p>
+    <h1>Price Prediction Results</h1>
+    <p class="subtitle">Based on AI analysis of your description</p>
 
     <div class="extracted-params">
       <h2>Extracted Parameters</h2>
       <div class="params-grid">
         <div class="param-item">
-          <div class="param-label">Area</div>
-          <div class="param-value"><%= area %> sq meters</div>
+          <div class="param-label">Construction Year</div>
+          <div class="param-value"><%= construction_year %></div>
         </div>
         <div class="param-item">
-          <div class="param-label">Rooms</div>
-          <div class="param-value"><%= rooms %></div>
+          <div class="param-label">Lot Size</div>
+          <div class="param-value"><%= lot_sqft %> sq ft</div>
         </div>
         <div class="param-item">
-          <div class="param-label">Bathrooms</div>
-          <div class="param-value"><%= bathrooms %></div>
+          <div class="param-label">Acres</div>
+          <div class="param-value"><%= calc_acres %></div>
         </div>
         <div class="param-item">
-          <div class="param-label">Age</div>
-          <div class="param-value"><%= age %> years</div>
+          <div class="param-label">Land Value</div>
+          <div class="param-value">$<%= format('%.0f', land_value.to_f) %></div>
+        </div>
+        <div class="param-item">
+          <div class="param-label">Improvement Value</div>
+          <div class="param-value">$<%= format('%.0f', improvement_value.to_f) %></div>
+        </div>
+        <div class="param-item">
+          <div class="param-label">Zipcode</div>
+          <div class="param-value"><%= zipcode %></div>
         </div>
       </div>
 
@@ -109,7 +126,7 @@
 
     <div class="result">
       <div class="label">Predicted Price</div>
-      <div class="price">$<%= format('%.2f', price) %>K</div>
+      <div class="price">$<%= format('%.2f', price) %></div>
     </div>
 
     <a href="/llm" class="back-link">← Try Another Prediction</a>

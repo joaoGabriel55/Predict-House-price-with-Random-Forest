@@ -8,21 +8,23 @@
 </head>
 <body>
   <div class="card">
-    <h1>🏠 House Price Predictor</h1>
-    <p class="subtitle">Powered by Random Forest Regression</p>
+    <h1>Las Vegas House Price Estimator</h1>
+    <p class="subtitle">Your estimated property value</p>
 
     <div class="result">
       <div class="label">Predicted Price</div>
-      <div class="price">$<%= format('%.2f', price) %>K</div>
+      <div class="price">$<%= format('%.2f', price) %></div>
     </div>
 
     <div class="input-summary">
       <h2>Input Parameters</h2>
       <ul>
-        <li><strong>Area:</strong> <%= area %> sq meters</li>
-        <li><strong>Rooms:</strong> <%= rooms %></li>
-        <li><strong>Bathrooms:</strong> <%= bathrooms %></li>
-        <li><strong>Age:</strong> <%= age %> years</li>
+        <li><strong>Construction Year:</strong> <%= construction_year %></li>
+        <li><strong>Lot Size:</strong> <%= lot_sqft %> sq ft</li>
+        <li><strong>Calculated Acres:</strong> <%= calc_acres %></li>
+        <li><strong>Land Value:</strong> $<%= format('%.2f', land_value.to_f) %></li>
+        <li><strong>Improvement Value:</strong> $<%= format('%.2f', improvement_value.to_f) %></li>
+        <li><strong>Zipcode:</strong> <%= zipcode %></li>
       </ul>
     </div>
 

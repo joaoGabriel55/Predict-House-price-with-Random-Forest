@@ -10,8 +10,15 @@ class HousePredictor
     @model = Marshal.load(File.read(model_path))
   end
 
-  def predict(area:, rooms:, bathrooms:, age:)
-    input = Numo::DFloat[[area.to_f, rooms.to_f, bathrooms.to_f, age.to_f]]
+  def predict(construction_year:, lot_sqft:, calc_acres:, land_value:, improvement_value:, zipcode:)
+    input = Numo::DFloat[[
+      construction_year.to_f,
+      lot_sqft.to_f,
+      calc_acres.to_f,
+      land_value.to_f,
+      improvement_value.to_f,
+      zipcode.to_f
+    ]]
     @model.predict(input)[0].round(2)
   end
 end

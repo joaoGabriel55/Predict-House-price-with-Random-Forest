@@ -14,25 +14,31 @@ class PredictionsController
   end
 
   def predict(params)
-    area      = params[:area] || params["area"]
-    rooms     = params[:rooms] || params["rooms"]
-    bathrooms = params[:bathrooms] || params["bathrooms"]
-    age       = params[:age] || params["age"]
+    construction_year = params[:construction_year] || params["construction_year"]
+    lot_sqft          = params[:lot_sqft] || params["lot_sqft"]
+    calc_acres        = params[:calc_acres] || params["calc_acres"]
+    land_value        = params[:land_value] || params["land_value"]
+    improvement_value = params[:improvement_value] || params["improvement_value"]
+    zipcode           = params[:zipcode] || params["zipcode"]
 
     price = @predictor.predict(
-      area: area.to_f,
-      rooms: rooms.to_f,
-      bathrooms: bathrooms.to_f,
-      age: age.to_f
+      construction_year: construction_year.to_f,
+      lot_sqft: lot_sqft.to_f,
+      calc_acres: calc_acres.to_f,
+      land_value: land_value.to_f,
+      improvement_value: improvement_value.to_f,
+      zipcode: zipcode.to_f
     )
 
     {
       view: :result,
       locals: {
-        area: area,
-        rooms: rooms,
-        bathrooms: bathrooms,
-        age: age,
+        construction_year: construction_year,
+        lot_sqft: lot_sqft,
+        calc_acres: calc_acres,
+        land_value: land_value,
+        improvement_value: improvement_value,
+        zipcode: zipcode,
         price: price
       }
     }
@@ -70,10 +76,11 @@ class PredictionsController
     chat.with_tool(@llm_predictor, choice: :required)
 
     prompt = <<~PROMPT
-      Extract the house parameters from the following description and use the tool to predict the price:
+      Extract the Las Vegas house parameters from the following description and use the tool to predict the price:
       #{text}
 
-      Extract: area (square meters), rooms (count), bathrooms (count), and age (years).
+      Extract: construction_year (year built), lot_sqft (lot size in square feet), calc_acres (calculated acres),
+      land_value (land value in dollars), improvement_value (building/improvement value in dollars), and zipcode.
     PROMPT
 
     chat.ask(prompt)
@@ -87,10 +94,12 @@ class PredictionsController
     {
       view: :llm_result,
       locals: {
-        area: tool_result[:area],
-        rooms: tool_result[:rooms],
-        bathrooms: tool_result[:bathrooms],
-        age: tool_result[:age],
+        construction_year: tool_result[:construction_year],
+        lot_sqft: tool_result[:lot_sqft],
+        calc_acres: tool_result[:calc_acres] <= 0.0 ? 0 : tool_result[:calc_acres],
+        land_value: tool_result[:land_value],
+        improvement_value: tool_result[:improvement_value],
+        zipcode: tool_result[:zipcode],
         price: tool_result[:predicted_price],
         original_text: text
       }

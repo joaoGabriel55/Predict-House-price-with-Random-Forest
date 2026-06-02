@@ -8,30 +8,32 @@
   <style>
     .mode-toggle {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 6px;
     }
 
     .mode-toggle a {
-      color: #2c5364;
+      color: #c9a961;
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.875rem;
       font-weight: 600;
-      transition: color 0.2s ease;
+      transition: all 0.2s ease;
     }
 
     .mode-toggle a:hover {
-      color: #0f2027;
-      text-decoration: underline;
+      color: #e57a44;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>🏠 House Price Predictor</h1>
-    <p class="subtitle">Powered by Random Forest Regression</p>
+    <h1>Las Vegas House Price Estimator</h1>
+    <p class="subtitle">Predict property values using machine learning</p>
 
     <div class="mode-toggle">
-      <a href="/llm">🤖 Switch to AI Text Mode →</a>
+      <a href="/llm">Switch to AI Text Mode →</a>
     </div>
 
     <% if defined?(error_message) && error_message %>
@@ -43,26 +45,36 @@
 
     <form action="/predict" method="post">
       <div class="form-group">
-        <label>Area <span class="unit">(sq meters)</span></label>
-        <input type="number" name="area" placeholder="e.g. 1500" min="1" required>
+        <label>Construction Year</label>
+        <input type="number" name="construction_year" placeholder="e.g. 2005" min="1900" max="2026" required>
       </div>
 
       <div class="form-group">
-        <label>Rooms</label>
-        <input type="number" name="rooms" placeholder="e.g. 3" min="1" required>
+        <label>Lot Size <span class="unit">(square feet)</span></label>
+        <input type="number" name="lot_sqft" placeholder="e.g. 1500" min="1" required>
       </div>
 
       <div class="form-group">
-        <label>Bathrooms</label>
-        <input type="number" name="bathrooms" placeholder="e.g. 2" min="1" required>
+        <label>Calculated Acres</label>
+        <input type="number" name="calc_acres" placeholder="e.g. 0.0" step="0.01" min="0" required>
       </div>
 
       <div class="form-group">
-        <label>Age <span class="unit">(years)</span></label>
-        <input type="number" name="age" placeholder="e.g. 10" min="0" required>
+        <label>Land Value <span class="unit">($)</span></label>
+        <input type="number" name="land_value" placeholder="e.g. 28000" min="0" required>
       </div>
 
-      <button type="submit">Predict Price</button>
+      <div class="form-group">
+        <label>Improvement Value <span class="unit">($)</span></label>
+        <input type="number" name="improvement_value" placeholder="e.g. 65000" min="0" required>
+      </div>
+
+      <div class="form-group">
+        <label>Zipcode</label>
+        <input type="number" name="zipcode" placeholder="e.g. 891290000" min="1" required>
+      </div>
+
+      <button type="submit">Calculate Price</button>
     </form>
   </div>
 </body>
