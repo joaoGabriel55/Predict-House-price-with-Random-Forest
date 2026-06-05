@@ -1,6 +1,6 @@
 # Benchmark Results: Random Forest vs LLM for House Price Prediction
 
-**Date:** 2026-06-02 13:55
+**Date:** 2026-06-03 10:32
 **LLM Model:** anthropic/claude-opus-4.6
 **RF Estimators:** 100
 **Dataset:** Las Vegas Housing (23075 valid residential sales from 25000 total rows)
@@ -13,8 +13,8 @@
 
 | Metric | Random Forest | LLM (anthropic/claude-opus-4.6) |
 |--------|--------------|----------------|
-| MAE    | 46.16K | 233.65K |
-| RMSE   | 71.37K | 292.03K |
+| MAE    | 46.16K | 233.15K |
+| RMSE   | 71.37K | 293.38K |
 
 **Winner:** Random Forest (lower error is better)
 
@@ -22,19 +22,17 @@
 
 | Metric | Random Forest | LLM |
 |--------|--------------|-----|
-| Avg latency | 0.828 ms | 2169.4 ms |
-| Speedup | — | ~2621x slower |
+| Avg latency | 0.628 ms | 2171.7 ms |
+| Speedup | — | ~3457x slower |
 
-**Winner:** Random Forest (2621x faster)
+**Winner:** Random Forest (3457x faster)
 
-## Experiment 3 — Consistency (10 repeated predictions per case)
+## Experiment 3 — Consistency (20 repeated predictions per case)
 
 | Case | RF Variance | LLM Std Dev |
 |------|-------------|-------------|
-| 2003, 1855, 30100 | 0 (deterministic) | — (see raw output) |
-| 2009, 1916, 39550 | 0 (deterministic) | — (see raw output) |
-| 2023, 2010, 54600 | 0 (deterministic) | — (see raw output) |
-
-_(Fill in LLM std dev values from the raw output above)_
+| 2003, 1855, 30100 | 0 (deterministic) | 4.36K |
+| 2009, 1916, 39550 | 0 (deterministic) | 1.09K |
+| 2023, 2010, 54600 | 0 (deterministic) | 12.23K |
 
 **Winner:** Random Forest (deterministic, zero variance)

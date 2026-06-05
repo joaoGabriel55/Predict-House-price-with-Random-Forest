@@ -39,7 +39,7 @@ API_URL        = 'https://openrouter.ai/api/v1/chat/completions'
 MODEL          = 'anthropic/claude-opus-4.6' # Change to any model on OpenRouter
 CSV_FILE       = 'housing_las_vegas_06_22_26.csv'
 TEST_RATIO     = 0.2          # 20% of data for testing
-CONSISTENCY_N  = 10           # number of repeated LLM calls per test case
+CONSISTENCY_N  = 20           # number of repeated LLM calls per test case
 RANDOM_SEED    = 42
 
 # Feature columns to use for prediction
@@ -276,6 +276,7 @@ puts "=" * 70
 # Pick 3 test cases
 consistency_cases = test_features[0..2]
 consistency_actual = test_prices[0..2]
+llm_std_devs = []
 
 consistency_cases.each_with_index do |features, ci|
   year_built, lot_sqft, acres, land_val, imp_val, zipcode, sale_year, sale_month = features
@@ -312,8 +313,10 @@ consistency_cases.each_with_index do |features, ci|
   end
 
   llm_variance = llm_preds.sum { |p| (p - llm_preds.sum / llm_preds.size.to_f)**2 } / llm_preds.size.to_f
+  llm_std_dev = Math.sqrt(llm_variance)
+  llm_std_devs << llm_std_dev
   puts "\n  LLM predictions: #{llm_preds.map { |p| p.round(1) }.join(', ')}"
-  puts "  LLM variance: #{llm_variance.round(2)} | Std dev: #{Math.sqrt(llm_variance).round(2)}K"
+  puts "  LLM variance: #{llm_variance.round(2)} | Std dev: #{llm_std_dev.round(2)}K"
 end
 
 puts
@@ -361,10 +364,8 @@ markdown = <<~MD
   | Case | RF Variance | LLM Std Dev |
   |------|-------------|-------------|
   #{consistency_cases.each_with_index.map do |features, ci|
-    "| #{features[0].to_i}, #{features[1].to_i}, #{features[3].to_i} | 0 (deterministic) | — (see raw output) |"
+    "| #{features[0].to_i}, #{features[1].to_i}, #{features[3].to_i} | 0 (deterministic) | #{llm_std_devs[ci].round(2)}K |"
   end.join("\n")}
-
-  _(Fill in LLM std dev values from the raw output above)_
 
   **Winner:** Random Forest (deterministic, zero variance)
 MD
