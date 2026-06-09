@@ -38,8 +38,8 @@ API_KEY        = ENV.fetch('OPENROUTER_API_KEY') { abort 'Set OPENROUTER_API_KEY
 API_URL        = 'https://openrouter.ai/api/v1/chat/completions'
 MODEL          = 'anthropic/claude-opus-4.6' # Change to any model on OpenRouter
 CSV_FILE       = 'housing_las_vegas_06_22_26.csv'
-TEST_RATIO     = 0.2          # 20% of data for testing
-CONSISTENCY_N  = 20           # number of repeated LLM calls per test case
+TEST_RATIO     = 0.3          # 30% of data for testing
+CONSISTENCY_N  = 120          # number of repeated LLM calls per test case
 RANDOM_SEED    = 42
 
 # Feature columns to use for prediction
@@ -207,8 +207,8 @@ puts "Random Forest — MAE: #{rf_mae.round(2)}K | RMSE: #{rf_rmse.round(2)}K"
 llm_predictions = []
 llm_latencies   = []
 
-# Limit to 20 test cases to avoid excessive API calls
-test_subset_size = [test_features.size, 20].min
+# Limit to 120 test cases to avoid excessive API calls
+test_subset_size = [test_features.size, 120].min
 puts "Running LLM predictions on #{test_subset_size} test cases (may take a few minutes)..."
 
 test_features[0...test_subset_size].each_with_index do |features, i|
