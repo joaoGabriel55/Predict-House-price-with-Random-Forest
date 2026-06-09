@@ -475,6 +475,7 @@
                         <h4>Dataset</h4>
                         <p><strong>Real Las Vegas Housing Data</strong></p>
                         <p>23,075 residential property sales with 8 features</p>
+                        <p style="margin-top: 10px; font-size: 0.9em;"><a href="https://opendataportal-lasvegas.opendata.arcgis.com/datasets/clv-parcel-and-property-assessment-records/explore" target="_blank" style="color: #e57a44;">City of Las Vegas Open Data Portal</a></p>
                     </div>
                 </div>
             </section>
@@ -893,7 +894,10 @@ Workflow:
                 <div class="architecture-diagram">
 Dataset: Las Vegas Housing Sales (housing_las_vegas_06_22_26.csv)
 
-Source: Real residential property sales data
+Source: City of Las Vegas Open Data Portal
+        Parcel and Property Assessment Records
+        https://opendataportal-lasvegas.opendata.arcgis.com/datasets/clv-parcel-and-property-assessment-records/explore
+
 Total Rows: 25,000
 Valid Samples: 23,075 (residential sales only, SALETYPE == 'R')
 
@@ -921,7 +925,7 @@ Target: SALEPRICE (converted to thousands for easier interpretation)
                     <li><strong>Claude Opus 4.6</strong> enables natural language understanding with reliable extraction accuracy</li>
                     <li><strong>Tool-based integration</strong> allows the LLM to intelligently call the RF model as needed</li>
                     <li><strong>Dual-mode interface</strong> serves both technical users (manual form) and general users (natural language)</li>
-                    <li><strong>Real Las Vegas data</strong> ensures predictions reflect actual market conditions (23,075 residential sales)</li>
+                    <li><strong>Real Las Vegas data</strong> ensures predictions reflect actual market conditions (23,075 residential sales from <a href="https://opendataportal-lasvegas.opendata.arcgis.com/datasets/clv-parcel-and-property-assessment-records/explore" target="_blank" style="color: white; text-decoration: underline;">City of Las Vegas Open Data Portal</a>)</li>
                 </ul>
 
                 <div class="key-finding">
@@ -940,6 +944,9 @@ Target: SALEPRICE (converted to thousands for easier interpretation)
             <p style="margin-top: 10px; opacity: 0.8;">Built with Ruby, Sinatra, Rumale, and Claude Opus 4.6</p>
             <p style="margin-top: 10px; font-size: 0.9em;">
                 Benchmark Date: June 9, 2026 | Dataset: 23,075 residential sales
+            </p>
+            <p style="margin-top: 10px; font-size: 0.85em; opacity: 0.7;">
+                Dataset Source: <a href="https://opendataportal-lasvegas.opendata.arcgis.com/datasets/clv-parcel-and-property-assessment-records/explore" target="_blank" style="color: #c9a961;">City of Las Vegas Open Data Portal</a>
             </p>
         </footer>
     </div>

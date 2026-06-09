@@ -117,6 +117,8 @@ Replace `your_api_key_here` with your actual OpenRouter API key. This is require
 
 The repository includes `housing_las_vegas_06_22_26.csv`, a real Las Vegas housing dataset with property features and sale prices. This dataset is used for training the Random Forest model.
 
+**Dataset Source:** [City of Las Vegas Open Data Portal - Parcel and Property Assessment Records](https://opendataportal-lasvegas.opendata.arcgis.com/datasets/clv-parcel-and-property-assessment-records/explore)
+
 > **Note:** The legacy `generate_samples.py` script generates synthetic data in an older format (area, rooms, bathrooms, age) and is not compatible with the current model. The project now uses real Las Vegas housing data.
 
 ### 5. Train the model
@@ -254,6 +256,8 @@ This architecture leverages:
 
 The project uses real Las Vegas housing sales data from `housing_las_vegas_06_22_26.csv`. This dataset contains actual property features and sale prices, providing realistic training data for the Random Forest model.
 
+**Source:** [City of Las Vegas Open Data Portal - Parcel and Property Assessment Records](https://opendataportal-lasvegas.opendata.arcgis.com/datasets/clv-parcel-and-property-assessment-records/explore)
+
 > **Note:** The legacy `generate_samples.py` script generates synthetic data using a different schema and is not compatible with the current model.
 
 ---
@@ -261,6 +265,8 @@ The project uses real Las Vegas housing sales data from `housing_las_vegas_06_22
 ## 📊 Dataset Format
 
 The `housing_las_vegas_06_22_26.csv` file contains Las Vegas housing data with the following columns:
+
+**Source:** [City of Las Vegas Open Data Portal - Parcel and Property Assessment Records](https://opendataportal-lasvegas.opendata.arcgis.com/datasets/clv-parcel-and-property-assessment-records/explore)
 
 | Column | Description | Example |
 | ------ | ----------- | ------- |
