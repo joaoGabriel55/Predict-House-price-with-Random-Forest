@@ -552,7 +552,7 @@
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">5</div>
-                        <div>Random Forest model predicts price (avg latency: <strong>0.828ms</strong>)</div>
+                        <div>Random Forest model predicts price (avg latency: <strong>0.529ms</strong>)</div>
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">6</div>
@@ -592,7 +592,7 @@
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">8</div>
-                        <div>Result rendered in <code>llm_result.erb</code> showing extraction + prediction (avg latency: <strong>2,169ms</strong>)</div>
+                        <div>Result rendered in <code>llm_result.erb</code> showing extraction + prediction (avg latency: <strong>2,419.7ms</strong>)</div>
                     </div>
                 </div>
 
@@ -608,7 +608,7 @@
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">3</div>
-                        <div><code>save_model.rb</code> loads CSV and splits data into train/test sets (80/20 split)</div>
+                        <div><code>train_model.rb</code> loads CSV and trains on all valid residential sales data (benchmark.rb uses 70/30 train/test split for evaluation)</div>
                     </div>
                     <div class="flow-step">
                         <div class="flow-step-number">4</div>
@@ -628,9 +628,9 @@
             <!-- Benchmarks -->
             <section class="section">
                 <h2>Performance Benchmarks</h2>
-                <p><strong>Benchmark Date:</strong> June 2, 2026<br>
-                <strong>Test Dataset:</strong> 23,075 valid residential sales (18,460 train / 4,615 test)<br>
-                <strong>LLM Subset:</strong> 20 test cases</p>
+                <p><strong>Benchmark Date:</strong> June 9, 2026<br>
+                <strong>Test Dataset:</strong> 23,075 valid residential sales (16,152 train / 6,923 test)<br>
+                <strong>LLM Subset:</strong> 120 test cases</p>
 
                 <h3>Experiment 1: Accuracy Comparison</h3>
                 <table>
@@ -645,15 +645,15 @@
                     <tbody>
                         <tr class="winner">
                             <td><strong>MAE (Mean Absolute Error)</strong></td>
-                            <td>$46,160</td>
-                            <td>$233,650</td>
-                            <td>RF (5.1x better)</td>
+                            <td>$34,880</td>
+                            <td>$220,660</td>
+                            <td>RF (6.3x better)</td>
                         </tr>
                         <tr class="winner">
                             <td><strong>RMSE (Root Mean Squared Error)</strong></td>
-                            <td>$71,370</td>
-                            <td>$292,030</td>
-                            <td>RF (4.1x better)</td>
+                            <td>$55,020</td>
+                            <td>$252,460</td>
+                            <td>RF (4.6x better)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -671,14 +671,14 @@
                     <tbody>
                         <tr class="winner">
                             <td><strong>Average Prediction Time</strong></td>
-                            <td>0.828 ms</td>
-                            <td>2,169.4 ms</td>
-                            <td>RF (2,621x faster)</td>
+                            <td>0.529 ms</td>
+                            <td>2,419.7 ms</td>
+                            <td>RF (4,576x faster)</td>
                         </tr>
                         <tr>
                             <td><strong>Throughput</strong></td>
-                            <td>~1,207 predictions/sec</td>
-                            <td>~0.46 predictions/sec</td>
+                            <td>~1,890 predictions/sec</td>
+                            <td>~0.41 predictions/sec</td>
                             <td>RF</td>
                         </tr>
                     </tbody>
@@ -693,7 +693,7 @@
                             <span class="metric-value">0 (Deterministic)</span>
                         </div>
                         <div class="metric">
-                            <span class="metric-label">10 Repeated Predictions</span>
+                            <span class="metric-label">120 Repeated Predictions</span>
                             <span class="metric-value">Identical Results</span>
                         </div>
                         <p style="margin-top: 15px; color: #666; font-size: 0.9em;">
@@ -707,7 +707,7 @@
                             <span class="metric-value">High (Non-deterministic)</span>
                         </div>
                         <div class="metric">
-                            <span class="metric-label">10 Repeated Predictions</span>
+                            <span class="metric-label">120 Repeated Predictions</span>
                             <span class="metric-value">Different Results</span>
                         </div>
                         <p style="margin-top: 15px; color: #666; font-size: 0.9em;">
@@ -733,15 +733,15 @@
                     <tbody>
                         <tr class="winner">
                             <td><strong>Accuracy (MAE)</strong></td>
-                            <td>$46,160</td>
-                            <td>$233,650</td>
-                            <td>RF (5.1x better)</td>
+                            <td>$34,880</td>
+                            <td>$220,660</td>
+                            <td>RF (6.3x better)</td>
                         </tr>
                         <tr class="winner">
                             <td><strong>Speed</strong></td>
-                            <td>0.828 ms</td>
-                            <td>2,169 ms</td>
-                            <td>RF (2,621x faster)</td>
+                            <td>0.529 ms</td>
+                            <td>2,419.7 ms</td>
+                            <td>RF (4,576x faster)</td>
                         </tr>
                         <tr class="winner">
                             <td><strong>Consistency</strong></td>
@@ -763,8 +763,8 @@
                         </tr>
                         <tr class="winner">
                             <td><strong>Scalability</strong></td>
-                            <td>High (1,207 pred/sec)</td>
-                            <td>Low (0.46 pred/sec)</td>
+                            <td>High (1,890 pred/sec)</td>
+                            <td>Low (0.41 pred/sec)</td>
                             <td>RF</td>
                         </tr>
                         <tr>
@@ -797,8 +797,8 @@
                     <div class="comparison-card">
                         <h4>Use Random Forest When:</h4>
                         <ul>
-                            <li>Production accuracy is critical (MAE: $46K vs $234K)</li>
-                            <li>High throughput needed (1,207 vs 0.46 predictions/sec)</li>
+                            <li>Production accuracy is critical (MAE: $35K vs $221K)</li>
+                            <li>High throughput needed (1,890 vs 0.41 predictions/sec)</li>
                             <li>Deterministic results required (0 variance)</li>
                             <li>Cost optimization matters ($0 vs $0.05/prediction)</li>
                             <li>Input data is already structured</li>
@@ -858,12 +858,12 @@ Training Data:
   - Total samples: 23,075 (valid residential sales)
   - Features: [year_built, lot_sqft, calc_acres, land_val, imp_val, zipcode, sale_year, sale_month]
   - Target: sale_price (in thousands)
-  - Train/Test split: 80/20 (18,460 / 4,615)
+  - Train/Test split: 70/30 (16,152 / 6,923)
 
 Performance:
-  - MAE: $46,160
-  - RMSE: $71,370
-  - Prediction time: 0.828 ms
+  - MAE: $34,880
+  - RMSE: $55,020
+  - Prediction time: 0.529 ms
                 </div>
 
                 <h3>LLM Tool Integration</h3>
@@ -917,7 +917,7 @@ Target: SALEPRICE (converted to thousands for easier interpretation)
                 <p>This project demonstrates a <strong>hybrid ML + LLM architecture</strong> that leverages the strengths of both approaches:</p>
 
                 <ul>
-                    <li><strong>Random Forest</strong> provides accurate, fast, deterministic predictions (MAE: $46K, 0.828ms latency)</li>
+                    <li><strong>Random Forest</strong> provides accurate, fast, deterministic predictions (MAE: $35K, 0.529ms latency)</li>
                     <li><strong>Claude Opus 4.6</strong> enables natural language understanding with reliable extraction accuracy</li>
                     <li><strong>Tool-based integration</strong> allows the LLM to intelligently call the RF model as needed</li>
                     <li><strong>Dual-mode interface</strong> serves both technical users (manual form) and general users (natural language)</li>
@@ -929,7 +929,7 @@ Target: SALEPRICE (converted to thousands for easier interpretation)
                     <p><strong>For production house price prediction:</strong> Use Random Forest directly for maximum accuracy, speed, and cost-efficiency.</p>
                     <p><strong>For user-facing applications:</strong> Implement the hybrid tool-based approach to provide intuitive natural language input while maintaining RF's prediction accuracy.</p>
                     <p style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 15px;">
-                        The 5.1x accuracy advantage and 2,621x speed advantage of Random Forest make it the clear choice for the prediction engine itself. The LLM serves as an intelligent interface layer, not a replacement.
+                        The 6.3x accuracy advantage and 4,576x speed advantage of Random Forest make it the clear choice for the prediction engine itself. The LLM serves as an intelligent interface layer, not a replacement.
                     </p>
                 </div>
             </section>
@@ -939,7 +939,7 @@ Target: SALEPRICE (converted to thousands for easier interpretation)
             <p><strong>Las Vegas House Price Predictor</strong> - A hybrid ML + LLM system</p>
             <p style="margin-top: 10px; opacity: 0.8;">Built with Ruby, Sinatra, Rumale, and Claude Opus 4.6</p>
             <p style="margin-top: 10px; font-size: 0.9em;">
-                Benchmark Date: June 2, 2026 | Dataset: 23,075 residential sales
+                Benchmark Date: June 9, 2026 | Dataset: 23,075 residential sales
             </p>
         </footer>
     </div>
